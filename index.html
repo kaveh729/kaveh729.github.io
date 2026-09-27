@@ -422,32 +422,51 @@
       gap: 14px;
     }
     
-    .player-cover {
-      width: 100%;
-      height: 160px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(15, 138, 95, 0.25), rgba(201, 162, 39, 0.25));
+    .player-now {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 56px;
-      color: var(--accent);
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(15, 138, 95, 0.08);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+    
+    .player-now:hover {
+      background: rgba(15, 138, 95, 0.15);
     }
     
     .player-info {
-      text-align: center;
+      min-width: 0;
     }
     
     .player-title {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .player-artist {
       font-size: 13px;
       color: var(--muted);
       margin-top: 2px;
+    }
+    
+    .player-arrow {
+      font-size: 18px;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+    
+    .player-now.open .player-arrow {
+      transform: rotate(180deg);
     }
     
     .player-controls {
@@ -502,6 +521,14 @@
       padding: 0;
       margin: 0;
       border-top: 1px solid rgba(15, 138, 95, 0.15);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    
+    .player-list.open {
+      max-height: 400px;
+      overflow-y: auto;
     }
     
     .player-list li {
@@ -567,18 +594,19 @@
       <p>持续探索人类世界中</p>
     </section>
 
-    <section id="music" class="card">
+   <section id="music" class="card">
       <h2>人，听音乐</h2>
       <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
-        点击播放，或从列表里选一首。
+        点击歌名展开列表，选一首播放。
       </p>
     
       <div class="player">
-        <div class="player-cover" id="playerCover">♪</div>
-    
-        <div class="player-info">
-          <div class="player-title" id="playerTitle">未选择歌曲</div>
-          <div class="player-artist" id="playerArtist">—</div>
+        <div class="player-now" id="playerToggle" title="点击展开/收起列表">
+          <div class="player-info">
+            <div class="player-title" id="playerTitle">未选择歌曲</div>
+            <div class="player-artist" id="playerArtist">—</div>
+          </div>
+          <span class="player-arrow" id="playerArrow">▾</span>
         </div>
     
         <div class="player-controls">
@@ -923,6 +951,7 @@
         var titleEl = document.getElementById('playerTitle');
         var artistEl = document.getElementById('playerArtist');
         var listEl = document.getElementById('playerList');
+        var toggleEl = document.getElementById('playerToggle');
         var progressBar = document.getElementById('progressBar');
         var currentTimeEl = document.getElementById('currentTime');
         var durationEl = document.getElementById('duration');
@@ -1014,9 +1043,14 @@
           audio.currentTime = (progressBar.value / 100) * audio.duration;
         });
     
+        toggleEl.addEventListener('click', function () {
+          toggleEl.classList.toggle('open');
+          listEl.classList.toggle('open');
+        });
+    
         renderList();
         load(0, false);
-      
+    
         var autoPlayPromise = audio.play();
         if (autoPlayPromise !== undefined) {
           autoPlayPromise.catch(function () {
