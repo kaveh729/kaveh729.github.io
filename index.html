@@ -604,7 +604,6 @@
         <div class="player-now" id="playerToggle" title="点击展开/收起列表">
           <div class="player-info">
             <div class="player-title" id="playerTitle">未选择歌曲</div>
-            <div class="player-artist" id="playerArtist">—</div>
           </div>
           <span class="player-arrow" id="playerArrow">▾</span>
         </div>
@@ -969,7 +968,7 @@
             var li = document.createElement('li');
             li.dataset.index = i;
             li.innerHTML = '<span class="idx">' + (i + 1) + '</span><span>' +
-              song.title + ' — ' + song.artist + '</span>';
+              song.title + '</span>';
             li.addEventListener('click', function () {
               load(i, true);
             });
@@ -989,7 +988,6 @@
           var song = songs[current];
           audio.src = song.src;
           titleEl.textContent = song.title;
-          artistEl.textContent = song.artist;
           progressBar.value = 0;
           currentTimeEl.textContent = '0:00';
           durationEl.textContent = '0:00';
