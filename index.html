@@ -253,6 +253,47 @@
         gap: 8px;
       }
     }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      padding: 20px;
+    }
+    
+    .lightbox.active {
+      display: flex;
+    }
+    
+    .lightbox img {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      cursor: default;
+    }
+    
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 28px;
+      color: #fff;
+      font-size: 40px;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+      user-select: none;
+    }
+    
+    .lightbox-close:hover {
+      opacity: 1;
+    }
     
   </style>
 </head>
@@ -355,5 +396,40 @@
     </footer>
   
   <a href="#" class="back-to-top" title="返回顶部">↑</a>
-</body>
+    
+  <div class="lightbox" id="lightbox">
+      <span class="lightbox-close">&times;</span>
+      <img id="lightboxImg" src="" alt="">
+    </div>
+
+  <script>
+      (function () {
+        var lightbox = document.getElementById('lightbox');
+        var lightboxImg = document.getElementById('lightboxImg');
+    
+        document.querySelectorAll('.gallery img').forEach(function (img) {
+          img.addEventListener('click', function () {
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          });
+        });
+    
+        function close() {
+          lightbox.classList.remove('active');
+          lightboxImg.src = '';
+          document.body.style.overflow = '';
+        }
+    
+        lightbox.addEventListener('click', function (e) {
+          if (e.target === lightboxImg) return;
+          close();
+        });
+    
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') close();
+        });
+      })();
+    </script>
+  </body>
 </html>
