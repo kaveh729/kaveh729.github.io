@@ -226,6 +226,33 @@
       70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
       100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    
+    .gallery img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    
+    .gallery img:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    
+    @media (max-width: 520px) {
+      .gallery {
+        gap: 8px;
+      }
+    }
     
   </style>
 </head>
@@ -245,8 +272,10 @@
 
     <nav>
       <a href="#about">About Me</a>
+      <a href="#photos">Photos</a>
       <a href="#projects">Wish</a>
       <a href="#contact">Contact</a>
+      <a href="#message">Message</a>
     </nav>
 
     <section id="about" class="card">
@@ -254,6 +283,16 @@
       <p>持续探索人类世界中</p>
     </section>
 
+    <section id="photos" class="card">
+      <h2>请欣赏卡卡美照</h2>
+      <div class="gallery">
+        <img src="photos/1.jpg" alt="照片 1" loading="lazy">
+        <img src="photos/2.jpg" alt="照片 2" loading="lazy">
+        <img src="photos/3.jpg" alt="照片 3" loading="lazy">
+        <img src="photos/4.jpg" alt="照片 4" loading="lazy">
+      </div>
+    </section>
+    
     <section id="projects" class="card">
       <h2>愿望 / 清单</h2>
 
@@ -273,12 +312,8 @@
       <p>邮箱：<a href="mailto:你的邮箱@example.com">1806656233@qq.com</a></p>
       <p>GitHub：<a href="https://github.com/你的用户名">@kaveh729</a></p>
     </section>
-
-    <footer>
-      © 2026 尤黎猫 · 世界在我脚下
-    </footer>
     
-    <section class="card">
+    <section id="message" class="card">
       <h2>给我留言吧</h2>
       <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
         不需要注册，填写后直接发送。
@@ -315,6 +350,10 @@
     </section>
   </div>
 
+   <footer>
+      © 2026 尤黎猫 · 世界在我脚下
+    </footer>
+  
   <a href="#" class="back-to-top" title="返回顶部">↑</a>
 </body>
 </html>
