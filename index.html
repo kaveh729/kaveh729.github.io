@@ -565,6 +565,199 @@
       color: var(--accent);
     }
     
+      /* ========== 日志弹层 ========== */
+    .journal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(240, 247, 242, 0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9998;
+      overflow-y: auto;
+    }
+    
+    .journal-overlay.open {
+      display: block;
+    }
+    
+    .journal-overlay-bar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(15, 138, 95, 0.15);
+      z-index: 1;
+    }
+    
+    .journal-close {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    
+    .journal-close:hover {
+      opacity: 0.9;
+    }
+    
+    .journal-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    /* 表单 */
+    .write-toggle {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+    }
+    
+    .write-toggle:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    .write-form {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .write-form input,
+    .write-form textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+    }
+    
+    .write-form textarea {
+      min-height: 160px;
+      resize: vertical;
+    }
+    
+    .write-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    
+    .write-actions button {
+      padding: 9px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--accent);
+    }
+    
+    .write-actions button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    
+    .write-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+    
+    /* 日志卡片 */
+    #journalList .card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(15, 138, 95, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .entry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .entry-date {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    
+    .entry-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+    
+    .entry-body {
+      color: var(--text);
+      font-size: 15px;
+    }
+    
+    .entry-body p { margin: 0 0 10px; }
+    
+    .entry-tags {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(15, 138, 95, 0.12);
+      color: var(--accent);
+    }
+    
+    .entry-delete {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(200, 60, 60, 0.3);
+      color: #c0392b;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    
+    .entry-delete:hover {
+      background: rgba(200, 60, 60, 0.1);
+    }
+    
   </style>
 </head>
 <body>
@@ -1056,6 +1249,211 @@
             });
           });
         }
+      })();
+    </script>
+
+    <div id="journalOverlay" class="journal-overlay">
+      <div class="journal-overlay-bar">
+        <button id="journalClose" class="journal-close">← 返回</button>
+        <span class="journal-title">Journal</span>
+      </div>
+      <div class="journal-overlay-content">
+        <div class="container">
+          <h1>Journal</h1>
+          <p class="lead">记录萌萌的生活呀~</p>
+    
+          <button id="toggleWrite" class="write-toggle">✍️ 写新日志</button>
+    
+          <div id="writeForm" class="write-form" style="display:none;">
+            <input type="date" id="entryDate">
+            <input type="text" id="entryTitle" placeholder="标题">
+            <textarea id="entryBody" placeholder="正文..."></textarea>
+            <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
+            <p class="write-hint">
+              ⚠️ 只保存在当前浏览器，换设备/清缓存会丢失。建议点“导出备份”。
+            </p>
+            <div class="write-actions">
+              <button id="saveEntry" class="primary">保存</button>
+              <button id="cancelWrite">取消</button>
+              <button id="exportEntries">导出备份</button>
+            </div>
+          </div>
+    
+          <div id="journalList"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var overlay = document.getElementById('journalOverlay');
+        if (!overlay) return;
+    
+        var STORAGE_KEY = 'my_journal_entries';
+    
+        var entries = [
+          {
+            date: "2026-09-27",
+            title: "纪念！",
+            body: `
+              <p>忙活了半天，终于拥有了一个属于我的个人网页！好好玩！</p>
+            `,
+            tags: ["随笔"]
+          }
+        ];
+    
+        function getLocal() {
+          try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+          catch (e) { return []; }
+        }
+        function setLocal(arr) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+        }
+        function esc(s) {
+          return String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function textToHtml(text) {
+          return text.split(/\n+/).filter(function (l) { return l.trim(); })
+            .map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+        }
+    
+        function renderCard(item, index, isLocal) {
+          var card = document.createElement('article');
+          card.className = 'card';
+    
+          var tagsHtml = '';
+          if (item.tags && item.tags.length) {
+            tagsHtml = '<div class="entry-tags">' +
+              item.tags.map(function (t) {
+                return '<span class="tag">' + esc(t) + '</span>';
+              }).join('') + '</div>';
+          }
+    
+          var deleteBtn = isLocal
+            ? '<button class="entry-delete" data-index="' + index + '">删除</button>'
+            : '';
+    
+          var bodyHtml = isLocal ? textToHtml(item.body) : item.body;
+    
+          card.innerHTML =
+            '<div class="entry-head"><div>' +
+              '<div class="entry-date">' + esc(item.date) + '</div>' +
+              '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
+            '</div>' + deleteBtn + '</div>' +
+            '<div class="entry-body">' + bodyHtml + '</div>' + tagsHtml;
+    
+          return card;
+        }
+    
+        function renderAll() {
+          var list = document.getElementById('journalList');
+          if (!list) return;
+          list.innerHTML = '';
+    
+          var local = getLocal();
+          local.forEach(function (item, i) {
+            list.appendChild(renderCard(item, i, true));
+          });
+          entries.forEach(function (item, i) {
+            list.appendChild(renderCard(item, i, false));
+          });
+    
+          list.querySelectorAll('.entry-delete').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var idx = parseInt(btn.dataset.index, 10);
+              if (!confirm('确定删除？')) return;
+              var arr = getLocal();
+              arr.splice(idx, 1);
+              setLocal(arr);
+              renderAll();
+            });
+          });
+        }
+    
+        // 打开/关闭弹层
+        document.querySelectorAll('a[href="journal.html"]').forEach(function (a) {
+          a.addEventListener('click', function (e) {
+            e.preventDefault();
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+          });
+        });
+    
+        document.getElementById('journalClose').addEventListener('click', function () {
+          overlay.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+    
+        // 表单
+        var toggleBtn = document.getElementById('toggleWrite');
+        var formEl = document.getElementById('writeForm');
+        var dateInput = document.getElementById('entryDate');
+        var titleInput = document.getElementById('entryTitle');
+        var bodyInput = document.getElementById('entryBody');
+        var tagsInput = document.getElementById('entryTags');
+    
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var dd = String(today.getDate()).padStart(2, '0');
+        if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+    
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', function () {
+            var hidden = formEl.style.display === 'none';
+            formEl.style.display = hidden ? 'flex' : 'none';
+            toggleBtn.textContent = hidden ? '收起' : '✍️ 写新日志';
+          });
+        }
+    
+        if (document.getElementById('cancelWrite')) {
+          document.getElementById('cancelWrite').addEventListener('click', function () {
+            formEl.style.display = 'none';
+            toggleBtn.textContent = '✍️ 写新日志';
+            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
+          });
+        }
+    
+        if (document.getElementById('saveEntry')) {
+          document.getElementById('saveEntry').addEventListener('click', function () {
+            var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
+            var title = titleInput.value.trim();
+            var body = bodyInput.value.trim();
+            var tagsRaw = tagsInput.value.trim();
+    
+            if (!title || !body) { alert('标题和正文都要填。'); return; }
+    
+            var tags = tagsRaw
+              ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
+              : [];
+    
+            var arr = getLocal();
+            arr.unshift({ date: date, title: title, body: body, tags: tags });
+            setLocal(arr);
+    
+            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
+            formEl.style.display = 'none';
+            toggleBtn.textContent = '✍️ 写新日志';
+            renderAll();
+          });
+        }
+    
+        if (document.getElementById('exportEntries')) {
+          document.getElementById('exportEntries').addEventListener('click', function () {
+            var arr = getLocal();
+            if (!arr.length) { alert('还没有本地日志。'); return; }
+            var text = JSON.stringify(arr, null, 2);
+            navigator.clipboard.writeText(text).then(function () {
+              alert('已复制到剪贴板，粘贴到记事本保存。');
+            }).catch(function () {
+              prompt('复制保存：', text);
+            });
+          });
+        }
+    
+        renderAll();
       })();
     </script>
   </body>
