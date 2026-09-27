@@ -68,10 +68,26 @@
       flex-wrap: wrap;
     }
 
-    nav a {
+   nav a {
+      position: relative;
       color: var(--accent);
       text-decoration: none;
       font-weight: 500;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
     }
 
     nav a:hover {
@@ -86,7 +102,7 @@
       padding: 24px;
       margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
 
     .card:hover {
@@ -136,6 +152,37 @@
         font-size: 26px;
       }
     }
+
+    .back-to-top {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0.85;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 999;
+    }
+    
+    .back-to-top:hover {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
   </style>
 </head>
 <body>
@@ -183,5 +230,7 @@
       © 2026 尤黎猫 · 世界在我脚下
     </footer>
   </div>
+
+  <a href="#" class="back-to-top" title="返回顶部">↑</a>
 </body>
 </html>
