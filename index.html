@@ -778,6 +778,17 @@
       color: var(--muted);
     }
     
+    .visitor-counter {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    
+    .visitor-counter span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    
   </style>
 </head>
 <body>
@@ -928,6 +939,10 @@
   </div>
 
    <footer>
+     <p class="visitor-counter">
+        本站访问量：<span id="busuanzi_value_site_pv">—</span> 次 ·
+        访客数：<span id="busuanzi_value_site_uv">—</span> 人
+      </p>
       © 2026 尤黎猫 · 世界在我脚下
     </footer>
   
@@ -1557,5 +1572,7 @@
         renderAll();
       })();
     </script>
+
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   </body>
 </html>
