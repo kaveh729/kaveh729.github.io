@@ -946,6 +946,29 @@
       color: #fff;
     }
     
+    .journal-auth {
+      max-width: 360px;
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .journal-auth input {
+      padding: 10px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      outline: none;
+    }
+    
+    .journal-auth input:focus {
+      border-color: var(--accent);
+    }
+   
   </style>
 </head>
 <body>
@@ -1131,6 +1154,8 @@
       <img id="lightboxImg" src="" alt="">
     </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ 
   <script>
       (function () {
         var lightbox = document.getElementById('lightbox');
@@ -1507,63 +1532,71 @@
           <h1>Journal</h1>
           <p class="lead">记录萌萌的生活呀~</p>
     
-          <button id="toggleWrite" class="write-toggle">✍️ 写新日志</button>
-    
-          <div id="writeForm" class="write-form" style="display:none;">
-            <input type="date" id="entryDate">
-            <input type="text" id="entryTitle" placeholder="标题">
-            <textarea id="entryBody" placeholder="正文..."></textarea>
-            <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
-            <input type="file" id="entryImages" accept="image/*" multiple>
-            <p class="write-hint" id="imageHint">可上传多张图片，会自动压缩。</p>
-            <p class="write-hint">
-              ⚠️ 只保存在当前浏览器，换设备/清缓存会丢失。建议点“导出备份”。
-            </p>
+          <div id="journalAuth" class="journal-auth">
+            <p class="write-hint">请登录后查看你的日志。</p>
+            <input type="email" id="authEmail" placeholder="邮箱">
+            <input type="password" id="authPassword" placeholder="密码">
             <div class="write-actions">
-              <button id="saveEntry" class="primary">保存</button>
-              <button id="cancelWrite">取消</button>
-              <button id="exportEntries">导出备份</button>
+              <button id="authLogin" class="primary">登录</button>
+              <button id="authLogout" style="display:none;">退出登录</button>
             </div>
+            <p class="write-hint" id="authMsg"></p>
           </div>
-    
-          <div id="journalList"></div>
+          
+          <div id="journalMain" style="display:none;">
+            <button id="toggleWrite" class="write-toggle">✍️ 写新日志</button>
+          
+            <div id="writeForm" class="write-form" style="display:none;">
+              <input type="date" id="entryDate">
+              <input type="text" id="entryTitle" placeholder="标题">
+              <textarea id="entryBody" placeholder="正文..."></textarea>
+              <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
+              <div class="write-actions">
+                <button id="saveEntry" class="primary">保存</button>
+                <button id="cancelWrite">取消</button>
+              </div>
+            </div>
+          
+            <div id="journalList"></div>
+          </div>
         </div>
       </div>
     </div>
 
-     <script>
+    <script>
       (function () {
         var overlay = document.getElementById('journalOverlay');
         if (!overlay) return;
     
-        var STORAGE_KEY = 'my_journal_entries';
-        var MAX_IMAGES = 6;
-        var MAX_WIDTH = 1000;
-        var QUALITY = 0.75;
+        // ===== 换成你自己的 =====
+        var SUPABASE_URL = 'https://wwzfsxhvvgbdkdodtsfb.supabase.co/rest/v1/';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emZzeGh2dmdiZGtkb2R0c2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA2NTIsImV4cCI6MjEwNjA4NjY1Mn0.aA_X2lSNwrGWAkIyjMEcMIyqHCVTUQ4ZtnyTr1CeLxI';
+        // ========================
     
-        var entries = [
-          {
-            date: "2026-09-27",
-            title: "纪念！",
-            body: `
-              <p>忙活了半天终于拥有了独属于我的个人网页！</p>
-              <p>开心开心🎉</p>
-            `,
-            tags: ["随笔","📝"]
-          }
-        ];
+        var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
-        function getLocal() {
-          try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-          catch (e) { return []; }
-        }
-        function setLocal(arr) {
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-          } catch (e) {
-            alert('浏览器存储已满，无法保存。请删除一些旧日志或减少图片。');
-          }
-        }
+        var authEl = document.getElementById('journalAuth');
+        var mainEl = document.getElementById('journalMain');
+        var emailEl = document.getElementById('authEmail');
+        var passEl = document.getElementById('authPassword');
+        var loginBtn = document.getElementById('authLogin');
+        var logoutBtn = document.getElementById('authLogout');
+        var msgEl = document.getElementById('authMsg');
+    
+        var listEl = document.getElementById('journalList');
+        var toggleBtn = document.getElementById('toggleWrite');
+        var formEl = document.getElementById('writeForm');
+        var dateInput = document.getElementById('entryDate');
+        var titleInput = document.getElementById('entryTitle');
+        var bodyInput = document.getElementById('entryBody');
+        var tagsInput = document.getElementById('entryTags');
+    
+        var today = new Date();
+        var yyyy = today.getFullYear();
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var dd = String(today.getDate()).padStart(2, '0');
+        if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+    
         function esc(s) {
           return String(s)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -1574,42 +1607,7 @@
             .map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
         }
     
-        // 压缩图片：读成 dataURL，缩小到 MAX_WIDTH，返回 Promise
-        function compressImage(file) {
-          return new Promise(function (resolve, reject) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-              var img = new Image();
-              img.onload = function () {
-                var canvas = document.createElement('canvas');
-                var scale = Math.min(1, MAX_WIDTH / img.width);
-                canvas.width = img.width * scale;
-                canvas.height = img.height * scale;
-                var ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', QUALITY));
-              };
-              img.onerror = reject;
-              img.src = e.target.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        }
-    
-        function renderImages(images) {
-          if (!images || !images.length) return '';
-          return '<div class="entry-images">' +
-            images.map(function (src) {
-              return '<img src="' + src + '" alt="日志图片">';
-            }).join('') +
-            '</div>';
-        }
-    
-        function renderCard(item, index, isLocal) {
-          var card = document.createElement('article');
-          card.className = 'card';
-    
+        function renderCard(item) {
           var tagsHtml = '';
           if (item.tags && item.tags.length) {
             tagsHtml = '<div class="entry-tags">' +
@@ -1618,51 +1616,93 @@
               }).join('') + '</div>';
           }
     
-          var deleteBtn = isLocal
-            ? '<button class="entry-delete" data-index="' + index + '">删除</button>'
-            : '';
-    
-          var bodyHtml = isLocal ? textToHtml(item.body) : item.body;
-          var imagesHtml = renderImages(item.images);
-    
+          var card = document.createElement('article');
+          card.className = 'card';
           card.innerHTML =
-            '<div class="entry-head"><div>' +
-              '<div class="entry-date">' + esc(item.date) + '</div>' +
-              '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
-            '</div>' + deleteBtn + '</div>' +
-            '<div class="entry-body">' + bodyHtml + '</div>' +
-            imagesHtml +
+            '<div class="entry-head">' +
+              '<div>' +
+                '<div class="entry-date">' + esc(item.date) + '</div>' +
+                '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
+              '</div>' +
+              '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
+            '</div>' +
+            '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
             tagsHtml;
+    
+          card.querySelector('.entry-delete').addEventListener('click', function () {
+            if (!confirm('确定删除？')) return;
+            sb.from('journal').delete().eq('id', item.id).then(function () {
+              loadEntries();
+            });
+          });
     
           return card;
         }
     
-        function renderAll() {
-          var list = document.getElementById('journalList');
-          if (!list) return;
-          list.innerHTML = '';
-    
-          var local = getLocal();
-          local.forEach(function (item, i) {
-            list.appendChild(renderCard(item, i, true));
-          });
-          entries.forEach(function (item, i) {
-            list.appendChild(renderCard(item, i, false));
-          });
-    
-          list.querySelectorAll('.entry-delete').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var idx = parseInt(btn.dataset.index, 10);
-              if (!confirm('确定删除？')) return;
-              var arr = getLocal();
-              arr.splice(idx, 1);
-              setLocal(arr);
-              renderAll();
+        function loadEntries() {
+          sb.from('journal')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .then(function (res) {
+              if (res.error) {
+                console.error(res.error);
+                return;
+              }
+              listEl.innerHTML = '';
+              if (!res.data.length) {
+                listEl.innerHTML = '<p style="color:var(--muted);font-size:14px;">还没有日志。</p>';
+                return;
+              }
+              res.data.forEach(function (item) {
+                listEl.appendChild(renderCard(item));
+              });
             });
-          });
         }
     
-        // 打开 / 关闭弹层
+        function showLoggedIn(isLoggedIn) {
+          if (isLoggedIn) {
+            authEl.style.display = 'none';
+            mainEl.style.display = 'block';
+            logoutBtn.style.display = 'inline-block';
+            loadEntries();
+          } else {
+            authEl.style.display = 'flex';
+            mainEl.style.display = 'none';
+            logoutBtn.style.display = 'none';
+          }
+        }
+    
+        loginBtn.addEventListener('click', function () {
+          var email = emailEl.value.trim();
+          var password = passEl.value;
+          if (!email || !password) {
+            msgEl.textContent = '邮箱和密码都要填。';
+            return;
+          }
+          msgEl.textContent = '登录中...';
+          sb.auth.signInWithPassword({ email: email, password: password })
+            .then(function (res) {
+              if (res.error) {
+                msgEl.textContent = '登录失败：' + res.error.message;
+                return;
+              }
+              msgEl.textContent = '';
+              passEl.value = '';
+              showLoggedIn(true);
+            });
+        });
+    
+        logoutBtn.addEventListener('click', function () {
+          sb.auth.signOut().then(function () {
+            showLoggedIn(false);
+          });
+        });
+    
+        sb.auth.getSession().then(function (res) {
+          var session = res.data && res.data.session;
+          showLoggedIn(!!session);
+        });
+    
         document.querySelectorAll('a[href="journal.html"]').forEach(function (a) {
           a.addEventListener('click', function (e) {
             e.preventDefault();
@@ -1676,114 +1716,49 @@
           document.body.style.overflow = '';
         });
     
-        // 表单元素
-        var toggleBtn = document.getElementById('toggleWrite');
-        var formEl = document.getElementById('writeForm');
-        var dateInput = document.getElementById('entryDate');
-        var titleInput = document.getElementById('entryTitle');
-        var bodyInput = document.getElementById('entryBody');
-        var tagsInput = document.getElementById('entryTags');
-        var imagesInput = document.getElementById('entryImages');
-        var hintEl = document.getElementById('imageHint');
+        toggleBtn.addEventListener('click', function () {
+          var hidden = formEl.style.display === 'none';
+          formEl.style.display = hidden ? 'flex' : 'none';
+          toggleBtn.textContent = hidden ? '收起' : '✍️ 写新日志';
+        });
     
-        var today = new Date();
-        var yyyy = today.getFullYear();
-        var mm = String(today.getMonth() + 1).padStart(2, '0');
-        var dd = String(today.getDate()).padStart(2, '0');
-        if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('cancelWrite').addEventListener('click', function () {
+          formEl.style.display = 'none';
+          toggleBtn.textContent = '✍️ 写新日志';
+          titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
+        });
     
-        // 暂存压缩后的图片
-        var pendingImages = [];
+        document.getElementById('saveEntry').addEventListener('click', function () {
+          var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
+          var title = titleInput.value.trim();
+          var body = bodyInput.value.trim();
+          var tagsRaw = tagsInput.value.trim();
     
-        if (imagesInput) {
-          imagesInput.addEventListener('change', function () {
-            var files = Array.from(imagesInput.files).slice(0, MAX_IMAGES);
-            if (!files.length) return;
+          if (!title || !body) { alert('标题和正文都要填。'); return; }
     
-            hintEl.textContent = '正在压缩图片...';
+          var tags = tagsRaw
+            ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
+            : [];
     
-            Promise.all(files.map(compressImage)).then(function (dataUrls) {
-              pendingImages = dataUrls;
-              var totalKB = Math.round(
-                dataUrls.reduce(function (sum, s) { return sum + s.length; }, 0) * 0.75 / 1024
-              );
-              hintEl.textContent = '已选 ' + dataUrls.length + ' 张，约 ' + totalKB + ' KB';
-            }).catch(function () {
-              hintEl.textContent = '图片读取失败，请重试。';
-            });
-          });
-        }
-    
-        if (toggleBtn) {
-          toggleBtn.addEventListener('click', function () {
-            var hidden = formEl.style.display === 'none';
-            formEl.style.display = hidden ? 'flex' : 'none';
-            toggleBtn.textContent = hidden ? '收起' : '✍️ 写新日志';
-          });
-        }
-    
-        if (document.getElementById('cancelWrite')) {
-          document.getElementById('cancelWrite').addEventListener('click', function () {
+          sb.from('journal').insert([{
+            date: date,
+            title: title,
+            body: body,
+            tags: tags
+          }]).then(function (res) {
+            if (res.error) {
+              alert('保存失败：' + res.error.message);
+              return;
+            }
+            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
             formEl.style.display = 'none';
             toggleBtn.textContent = '✍️ 写新日志';
-            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
-            imagesInput.value = '';
-            pendingImages = [];
-            hintEl.textContent = '可上传多张图片，会自动压缩。';
+            loadEntries();
           });
-        }
-    
-        if (document.getElementById('saveEntry')) {
-          document.getElementById('saveEntry').addEventListener('click', function () {
-            var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
-            var title = titleInput.value.trim();
-            var body = bodyInput.value.trim();
-            var tagsRaw = tagsInput.value.trim();
-    
-            if (!title || !body) { alert('标题和正文都要填。'); return; }
-    
-            var tags = tagsRaw
-              ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
-              : [];
-    
-            var arr = getLocal();
-            arr.unshift({
-              date: date,
-              title: title,
-              body: body,
-              tags: tags,
-              images: pendingImages.slice()
-            });
-            setLocal(arr);
-    
-            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
-            imagesInput.value = '';
-            pendingImages = [];
-            hintEl.textContent = '可上传多张图片，会自动压缩。';
-    
-            formEl.style.display = 'none';
-            toggleBtn.textContent = '✍️ 写新日志';
-            renderAll();
-          });
-        }
-    
-        if (document.getElementById('exportEntries')) {
-          document.getElementById('exportEntries').addEventListener('click', function () {
-            var arr = getLocal();
-            if (!arr.length) { alert('还没有本地日志。'); return; }
-            var text = JSON.stringify(arr, null, 2);
-            navigator.clipboard.writeText(text).then(function () {
-              alert('已复制到剪贴板。注意：导出的内容包含图片，会很长。');
-            }).catch(function () {
-              prompt('复制保存：', text);
-            });
-          });
-        }
-    
-        renderAll();
+        });
       })();
     </script>
-
+ 
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
   <script>
