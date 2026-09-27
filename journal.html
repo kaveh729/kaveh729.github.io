@@ -1,1 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日志 | Kaveh</title>
+  <link rel="icon" href="favicon.png">
+  <style>
+    :root {
+      --bg: #f0f7f2;
+      --card: #ffffff;
+      --text: #081c10;
+      --muted: #2f4a38;
+      --accent: #0f8a5f;
+      --gold: #c9a227;
+    }
 
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background-image:
+        linear-gradient(rgba(240, 247, 242, 0.75), rgba(240, 247, 242, 0.75)),
+        url("bg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 48px 20px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back:hover { text-decoration: underline; }
+
+    h1 {
+      font-size: 32px;
+      margin: 0 0 8px;
+    }
+
+    .lead {
+      color: var(--muted);
+      margin: 0 0 28px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(15, 138, 95, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .entry-date {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .entry-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+
+    .entry-body {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .entry-body p { margin: 0 0 10px; }
+
+    .entry-tags {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(15, 138, 95, 0.12);
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 40px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      animation: fadeUp 0.5s ease both;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back">← 返回首页</a>
+
+    <h1>我的日志</h1>
+    <p class="lead">记录生活。</p>
+
+    <div id="journalList"></div>
+
+    <footer>
+      © 2026 尤黎猫 · 世界在我脚下
+    </footer>
+  </div>
+
+  <script>
+    var entries = [
+      {
+        date: "2026-09-27",
+        title: "开始写个人日志",
+        body: `
+          <p>今天给我的个人网站加了一个日志页面，以后可以在这里记录学习和生活。</p>
+          <p>希望能坚持写下去。</p>
+        `,
+        tags: ["随笔", "网站"]
+      },
+      {
+        date: "2026-09-20",
+        title: "学会了 HTML 和 CSS",
+        body: `
+          <p>这几天在学 HTML 和 CSS，终于做出了自己的第一个网页。</p>
+          <p>虽然还有很多不懂，但看到浏览器里出现自己的页面，很有成就感。</p>
+        `,
+        tags: ["学习", "前端"]
+      }
+    ];
+
+    (function () {
+      var list = document.getElementById('journalList');
+      if (!list) return;
+
+      entries.forEach(function (entry, i) {
+        var card = document.createElement('article');
+        card.className = 'card';
+        card.style.animationDelay = (i * 0.08) + 's';
+
+        var tagsHtml = '';
+        if (entry.tags && entry.tags.length) {
+          tagsHtml = '<div class="entry-tags">' +
+            entry.tags.map(function (t) {
+              return '<span class="tag">' + t + '</span>';
+            }).join('') +
+            '</div>';
+        }
+
+        card.innerHTML =
+          '<div class="entry-date">' + entry.date + '</div>' +
+          '<h2 class="entry-title">' + entry.title + '</h2>' +
+          '<div class="entry-body">' + entry.body + '</div>' +
+          tagsHtml;
+
+        list.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>
