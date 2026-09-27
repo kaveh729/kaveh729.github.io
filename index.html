@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
@@ -932,6 +932,11 @@
       gap: 8px;
     }
     
+    .player-controls button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    
   </style>
 </head>
 <body>
@@ -978,6 +983,7 @@
           <button id="prevBtn" title="上一首">⏮</button>
           <button id="playBtn" class="play-btn" title="播放/暂停">▶</button>
           <button id="nextBtn" title="下一首">⏭</button>
+          <button id="shuffleBtn" title="随机播放：关">🔀</button>
         </div>
     
         <div class="player-progress">
@@ -1317,7 +1323,7 @@
         if (!audio) return;
     
         var songs = [
-          { title: "time machine",  src: "music/time machine.mp3" },
+           { title: "time machine",  src: "music/time machine.mp3" },
           { title: "happiness is a butterfly", src: "music/happiness is a butterfly.mp3" },
           { title: "the bird song",  src: "music/the bird song.mp3" },
           { title: "let the light in",  src: "music/let the light in.mp3" },
@@ -1326,10 +1332,12 @@
         ];
     
         var current = 0;
+        var shuffle = false;
     
         var playBtn = document.getElementById('playBtn');
         var prevBtn = document.getElementById('prevBtn');
         var nextBtn = document.getElementById('nextBtn');
+        var shuffleBtn = document.getElementById('shuffleBtn');
         var titleEl = document.getElementById('playerTitle');
         var artistEl = document.getElementById('playerArtist');
         var listEl = document.getElementById('playerList');
@@ -1371,11 +1379,32 @@
           var song = songs[current];
           audio.src = song.src;
           titleEl.textContent = song.title;
+          artistEl.textContent = song.artist;
           progressBar.value = 0;
           currentTimeEl.textContent = '0:00';
           durationEl.textContent = '0:00';
           updateListState();
           if (autoplay) audio.play();
+        }
+    
+        // 随机选一首（不和当前重复）
+        function pickRandom() {
+          if (songs.length <= 1) return current;
+          var idx;
+          do {
+            idx = Math.floor(Math.random() * songs.length);
+          } while (idx === current);
+          return idx;
+        }
+    
+        function playNext(autoplay) {
+          if (shuffle) load(pickRandom(), autoplay);
+          else load(current + 1, autoplay);
+        }
+    
+        function playPrev() {
+          if (shuffle) load(pickRandom(), !audio.paused);
+          else load(current - 1, !audio.paused);
         }
     
         playBtn.addEventListener('click', function () {
@@ -1387,12 +1416,17 @@
           else audio.pause();
         });
     
-        prevBtn.addEventListener('click', function () {
-          load(current - 1, !audio.paused);
-        });
+        prevBtn.addEventListener('click', playPrev);
     
         nextBtn.addEventListener('click', function () {
-          load(current + 1, !audio.paused);
+          playNext(!audio.paused);
+        });
+    
+        // 随机播放开关
+        shuffleBtn.addEventListener('click', function () {
+          shuffle = !shuffle;
+          shuffleBtn.classList.toggle('active', shuffle);
+          shuffleBtn.title = shuffle ? '随机播放：开' : '随机播放：关';
         });
     
         audio.addEventListener('play', function () {
@@ -1416,7 +1450,7 @@
         });
     
         audio.addEventListener('ended', function () {
-          load(current + 1, true);
+          playNext(true);
         });
     
         progressBar.addEventListener('input', function () {
@@ -1424,6 +1458,7 @@
           audio.currentTime = (progressBar.value / 100) * audio.duration;
         });
     
+        // 点击歌名区域展开/收起列表
         toggleEl.addEventListener('click', function () {
           toggleEl.classList.toggle('open');
           listEl.classList.toggle('open');
@@ -1432,6 +1467,7 @@
         renderList();
         load(0, false);
     
+        // 打开网页自动尝试播放第一首
         var autoPlayPromise = audio.play();
         if (autoPlayPromise !== undefined) {
           autoPlayPromise.catch(function () {
@@ -1448,7 +1484,7 @@
         }
       })();
     </script>
-
+  
     <div id="journalOverlay" class="journal-overlay">
       <div class="journal-overlay-bar">
         <button id="journalClose" class="journal-close">← 返回</button>
