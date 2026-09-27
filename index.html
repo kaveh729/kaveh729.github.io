@@ -104,7 +104,14 @@
       margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
       transition: transform 0.1s ease, box-shadow 0.1s ease;
-      animation: fadeUp 0.6s ease both;
+                  opacity 0.6s ease, translate 0.6s ease;
+      opacity: 0;
+      translate: 0 24px;
+    }
+    
+    .card.visible {
+      opacity: 1;
+      translate: 0 0;
     }
 
     .card:hover {
@@ -1977,5 +1984,51 @@
         render();
       })();
     </script>
+   
+ <script>
+    (function () {
+      var cards = document.querySelectorAll('.card');
+      if (!cards.length) return;
+  
+      // 如果浏览器不支持 IntersectionObserver，直接全部显示
+      if (!('IntersectionObserver' in window)) {
+        cards.forEach(function (c) { c.classList.add('visible'); });
+        return;
+      }
+  
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry, i) {
+          if (entry.isIntersecting) {
+            // 依次浮现：根据进入视口的顺序加一点延迟
+            var delay = i * 80;
+            setTimeout(function () {
+              entry.target.classList.add('visible');
+            }, delay);
+  
+            // 出现后就不再观察
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -40px 0px'
+      });
+  
+      cards.forEach(function (card) {
+        observer.observe(card);
+      });
+  
+      // 第一屏的卡片立刻显示，不等滚动
+      setTimeout(function () {
+        var vh = window.innerHeight;
+        cards.forEach(function (card) {
+          var rect = card.getBoundingClientRect();
+          if (rect.top < vh && rect.bottom > 0) {
+            card.classList.add('visible');
+          }
+        });
+      }, 50);
+    })();
+  </script>
   </body>
 </html>
