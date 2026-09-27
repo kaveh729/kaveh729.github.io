@@ -295,6 +295,43 @@
       opacity: 1;
     }
     
+     .message-toggle {
+      cursor: pointer;
+    }
+    
+    .message-toggle summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 0;
+    }
+    
+    .message-toggle summary::-webkit-details-marker {
+      display: none;
+    }
+    
+    .message-toggle summary::marker {
+      display: none;
+    }
+    
+    .toggle-icon {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+      line-height: 1;
+    }
+    
+    .message-toggle[open] .toggle-icon {
+      transform: rotate(45deg);
+    }
+    
   </style>
 </head>
 <body>
@@ -354,21 +391,26 @@
       <p>GitHub：<a href="https://github.com/你的用户名">@kaveh729</a></p>
     </section>
     
-    <section id="message" class="card">
-      <h2>给我留言吧</h2>
-      <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
-        不需要注册，填写后直接发送。
-      </p>
-      <iframe
-        data-tally-src="https://tally.so/embed/9qVjB1?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-        loading="lazy"
-        width="100%"
-        height="842"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0"
-        title="Leave me a message."
-      ></iframe>
+   <section id="message" class="card">
+      <details class="message-toggle">
+        <summary>
+          <span>给我留言</span>
+          <span class="toggle-icon">+</span>
+        </summary>
+        <p style="color: var(--muted); font-size: 14px; margin-top: 8px;">
+          不需要注册，填写后直接发送。
+        </p>
+        <iframe
+          data-tally-src="https://tally.so/embed/9qVjB1?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+          loading="lazy"
+          width="100%"
+          height="842"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="Leave me a message."
+        ></iframe>
+      </details>
       <script>
         var d = document,
             w = "https://tally.so/widgets/embed.js",
