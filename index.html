@@ -31,13 +31,13 @@
     body {
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background-image:
-        linear-gradient(rgba(240, 247, 242, 0.75), rgba(240, 247, 242, 0.75)),
-        url("ee10dbc71b5837d8d8c2a05b4466de0d_2662377461556317882.jpg");
-      background-size: contain;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+          body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.7;
@@ -983,14 +983,7 @@
       --gold: #e0b84a;
     }
 
-    [data-theme="dark"] body {
-      background-image:
-        linear-gradient(rgba(11, 31, 22, 0.85), rgba(11, 31, 22, 0.85)),
-        url("ee10dbc71b5837d8d8c2a05b4466de0d_2662377461556317882.jpg");
-      background-size: contain;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+       [data-theme="dark"] body {
       background-color: var(--bg);
     }
 
@@ -1086,9 +1079,28 @@
       background: rgba(18, 51, 38, 0.85);
       border-color: rgba(52, 211, 153, 0.3);
     }
+
+        .bg-fixed {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: url("ee10dbc71b5837d8d8c2a05b4466de0d_2662377461556317882.jpg");
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-color: var(--bg);
+      pointer-events: none;
+    }
+
+    [data-theme="dark"] .bg-fixed {
+      background-image:
+        linear-gradient(rgba(11, 31, 22, 0.6), rgba(11, 31, 22, 0.6)),
+        url("ee10dbc71b5837d8d8c2a05b4466de0d_2662377461556317882.jpg");
+    }
   </style>
 </head>
 <body>
+  <div class="bg-fixed"></div>
   <div class="container">
     <header>
       <img class="avatar" src="362548f4c208cbb17188044ebbba60e7_3360623059818334571.png" alt="头像">
