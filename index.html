@@ -1,18 +1,27 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
+  <script>
+    (function () {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>尤黎猫 | 小宇宙</title>
   <style>
     :root {
-      --bg: #0b1f16;
-      --card: #123326;
+      --bg: #f0f7f2;
+      --card: #ffffff;
       --text: #081c10;
       --muted: #2f4a38;
-      --accent: #34d399;
-      --gold: #e0b84a;
+      --accent: #0f8a5f;
+      --gold: #c9a227;
     }
 
     * {
@@ -28,7 +37,7 @@
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
-      background-attachment: scroll;
+      background-color: var(--bg);
       color: var(--text);
       line-height: 1.7;
     }
@@ -47,11 +56,11 @@
     }
 
     .avatar {
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
     }
 
     h1 {
@@ -71,7 +80,7 @@
       flex-wrap: wrap;
     }
 
-   nav a {
+    nav a {
       position: relative;
       color: var(--accent);
       text-decoration: none;
@@ -98,14 +107,13 @@
       text-decoration: underline;
     }
 
-   .card {
+    .card {
       background: rgba(255, 255, 255, 0.45);
       border: 1px solid rgba(15, 138, 95, 0.2);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
@@ -113,13 +121,10 @@
                   box-shadow 0.2s ease;
       will-change: opacity, transform;
     }
-    
+
     .card.visible {
       opacity: 1;
       transform: translateY(0);
-    }
-    
-    .card.visible {
       will-change: auto;
     }
 
@@ -127,7 +132,7 @@
       transform: translateY(-4px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     }
-    
+
     .card h2 {
       margin-top: 0;
       font-size: 20px;
@@ -191,7 +196,7 @@
       transition: opacity 0.2s ease, transform 0.2s ease;
       z-index: 999;
     }
-    
+
     .back-to-top:hover {
       opacity: 1;
       transform: translateY(-3px);
@@ -201,7 +206,7 @@
       scroll-behavior: smooth;
     }
 
-        @keyframes fadeUp {
+    @keyframes fadeUp {
       from {
         opacity: 0;
         transform: translateY(16px);
@@ -211,10 +216,6 @@
         transform: translateY(0);
       }
     }
-    
-    .card:nth-of-type(1) { animation-delay: 0.1s; }
-    .card:nth-of-type(2) { animation-delay: 0.2s; }
-    .card:nth-of-type(3) { animation-delay: 0.3s; }
 
     .status {
       display: inline-flex;
@@ -227,7 +228,7 @@
       border-radius: 999px;
       margin-top: 6px;
     }
-    
+
     .dot {
       width: 8px;
       height: 8px;
@@ -237,7 +238,7 @@
       animation: pulse 2s infinite;
       flex-shrink: 0;
     }
-    
+
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
       70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
@@ -250,7 +251,7 @@
       gap: 12px;
       margin-top: 12px;
     }
-    
+
     .gallery img {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -259,12 +260,12 @@
       cursor: pointer;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    
+
     .gallery img:hover {
       transform: scale(1.04);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
-    
+
     @media (max-width: 520px) {
       .gallery {
         gap: 8px;
@@ -282,11 +283,11 @@
       cursor: zoom-out;
       padding: 20px;
     }
-    
+
     .lightbox.active {
       display: flex;
     }
-    
+
     .lightbox img {
       max-width: 95%;
       max-height: 95%;
@@ -294,7 +295,7 @@
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
       cursor: default;
     }
-    
+
     .lightbox-close {
       position: absolute;
       top: 16px;
@@ -307,15 +308,15 @@
       transition: opacity 0.2s ease;
       user-select: none;
     }
-    
+
     .lightbox-close:hover {
       opacity: 1;
     }
-    
-     .message-toggle {
+
+    .message-toggle {
       cursor: pointer;
     }
-    
+
     .message-toggle summary {
       display: flex;
       align-items: center;
@@ -328,15 +329,15 @@
       user-select: none;
       padding: 4px 0;
     }
-    
+
     .message-toggle summary::-webkit-details-marker {
       display: none;
     }
-    
+
     .message-toggle summary::marker {
       display: none;
     }
-    
+
     .toggle-icon {
       font-size: 24px;
       font-weight: 400;
@@ -344,31 +345,31 @@
       transition: transform 0.25s ease;
       line-height: 1;
     }
-    
+
     .message-toggle[open] .toggle-icon {
       transform: rotate(45deg);
     }
-    
-  .snake-wrap {
+
+    .snake-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 14px;
       margin-top: 16px;
     }
-    
+
     .snake-info {
       display: flex;
       gap: 24px;
       font-size: 15px;
       color: var(--text);
     }
-    
+
     .snake-info strong {
       color: var(--accent);
       font-size: 18px;
     }
-    
+
     #snakeCanvas {
       width: 100%;
       max-width: 400px;
@@ -378,19 +379,19 @@
       border-radius: 12px;
       touch-action: none;
     }
-    
+
     .snake-controls {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
     }
-    
+
     .snake-controls > div {
       display: flex;
       gap: 6px;
     }
-    
+
     .snake-controls button {
       width: 48px;
       height: 48px;
@@ -402,13 +403,13 @@
       cursor: pointer;
       transition: background 0.15s ease, transform 0.1s ease;
     }
-    
+
     .snake-controls button:active {
       background: var(--accent);
       color: #fff;
       transform: scale(0.95);
     }
-    
+
     .snake-start {
       background: var(--accent);
       color: #fff;
@@ -420,12 +421,12 @@
       cursor: pointer;
       transition: opacity 0.2s ease, transform 0.15s ease;
     }
-    
+
     .snake-start:hover {
       opacity: 0.9;
       transform: translateY(-2px);
     }
-    
+
     .snake-start:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -438,7 +439,7 @@
       flex-direction: column;
       gap: 14px;
     }
-    
+
     .player-now {
       display: flex;
       align-items: center;
@@ -451,15 +452,15 @@
       user-select: none;
       transition: background 0.15s ease;
     }
-    
+
     .player-now:hover {
       background: rgba(15, 138, 95, 0.15);
     }
-    
+
     .player-info {
       min-width: 0;
     }
-    
+
     .player-title {
       font-size: 16px;
       font-weight: 600;
@@ -468,31 +469,31 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .player-artist {
       font-size: 13px;
       color: var(--muted);
       margin-top: 2px;
     }
-    
+
     .player-arrow {
       font-size: 18px;
       color: var(--accent);
       transition: transform 0.25s ease;
       flex-shrink: 0;
     }
-    
+
     .player-now.open .player-arrow {
       transform: rotate(180deg);
     }
-    
+
     .player-controls {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 20px;
     }
-    
+
     .player-controls button {
       background: rgba(255, 255, 255, 0.6);
       border: 1px solid rgba(15, 138, 95, 0.25);
@@ -504,13 +505,13 @@
       cursor: pointer;
       transition: background 0.15s ease, transform 0.15s ease;
     }
-    
+
     .player-controls button:hover {
       background: var(--accent);
       color: #fff;
       transform: scale(1.06);
     }
-    
+
     .player-controls .play-btn {
       width: 56px;
       height: 56px;
@@ -518,7 +519,7 @@
       background: var(--accent);
       color: #fff;
     }
-    
+
     .player-progress {
       display: flex;
       align-items: center;
@@ -526,13 +527,13 @@
       font-size: 12px;
       color: var(--muted);
     }
-    
+
     .player-progress input[type="range"] {
       flex: 1;
       accent-color: var(--accent);
       cursor: pointer;
     }
-    
+
     .player-list {
       list-style: none;
       padding: 0;
@@ -542,12 +543,12 @@
       overflow: hidden;
       transition: max-height 0.3s ease;
     }
-    
+
     .player-list.open {
       max-height: 400px;
       overflow-y: auto;
     }
-    
+
     .player-list li {
       display: flex;
       align-items: center;
@@ -559,29 +560,28 @@
       color: var(--text);
       transition: background 0.15s ease;
     }
-    
+
     .player-list li:hover {
       background: rgba(15, 138, 95, 0.08);
     }
-    
+
     .player-list li.active {
       color: var(--accent);
       font-weight: 600;
     }
-    
+
     .player-list li .idx {
       width: 20px;
       text-align: center;
       color: var(--muted);
       font-size: 12px;
     }
-    
+
     .player-list li.playing .idx::before {
       content: "♪";
       color: var(--accent);
     }
-    
-      /* ========== 日志弹层 ========== */
+
     .journal-overlay {
       display: none;
       position: fixed;
@@ -590,11 +590,11 @@
       z-index: 9998;
       overflow-y: auto;
     }
-    
+
     .journal-overlay.open {
       display: block;
     }
-    
+
     .journal-overlay-bar {
       position: sticky;
       top: 0;
@@ -606,7 +606,7 @@
       border-bottom: 1px solid rgba(15, 138, 95, 0.15);
       z-index: 1;
     }
-    
+
     .journal-close {
       background: var(--accent);
       color: #fff;
@@ -617,17 +617,16 @@
       cursor: pointer;
       transition: opacity 0.2s ease;
     }
-    
+
     .journal-close:hover {
       opacity: 0.9;
     }
-    
+
     .journal-title {
       font-weight: 600;
       color: var(--text);
     }
-    
-    /* 表单 */
+
     .write-toggle {
       background: var(--accent);
       color: #fff;
@@ -640,12 +639,12 @@
       margin-bottom: 24px;
       transition: opacity 0.2s ease, transform 0.15s ease;
     }
-    
+
     .write-toggle:hover {
       opacity: 0.9;
       transform: translateY(-2px);
     }
-    
+
     .write-form {
       background: rgba(255, 255, 255, 0.6);
       border: 1px solid rgba(15, 138, 95, 0.25);
@@ -656,7 +655,7 @@
       flex-direction: column;
       gap: 10px;
     }
-    
+
     .write-form input,
     .write-form textarea {
       width: 100%;
@@ -669,19 +668,19 @@
       color: var(--text);
       outline: none;
     }
-    
+
     .write-form textarea {
       min-height: 160px;
       resize: vertical;
     }
-    
+
     .write-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 4px;
     }
-    
+
     .write-actions button {
       padding: 9px 20px;
       border-radius: 999px;
@@ -691,62 +690,68 @@
       background: rgba(255, 255, 255, 0.8);
       color: var(--accent);
     }
-    
+
     .write-actions button.primary {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
-    
+
+    .write-actions button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .write-hint {
       font-size: 12px;
       color: var(--muted);
       margin: 0;
     }
-    
-    /* 日志卡片 */
+
     #journalList .card {
       background: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(15, 138, 95, 0.2);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 20px;
+      opacity: 1;
+      transform: none;
     }
-    
+
     .entry-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
     }
-    
+
     .entry-date {
       font-size: 13px;
       color: var(--muted);
       margin-bottom: 6px;
     }
-    
+
     .entry-title {
       font-size: 20px;
       font-weight: 600;
       margin: 0 0 10px;
       color: var(--text);
     }
-    
+
     .entry-body {
       color: var(--text);
       font-size: 15px;
     }
-    
+
     .entry-body p { margin: 0 0 10px; }
-    
+
     .entry-tags {
       margin-top: 14px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
     }
-    
+
     .tag {
       font-size: 12px;
       padding: 3px 10px;
@@ -754,7 +759,7 @@
       background: rgba(15, 138, 95, 0.12);
       color: var(--accent);
     }
-    
+
     .entry-delete {
       flex-shrink: 0;
       background: transparent;
@@ -765,48 +770,49 @@
       border-radius: 999px;
       cursor: pointer;
     }
-    
+
     .entry-delete:hover {
       background: rgba(200, 60, 60, 0.1);
     }
-    
+
     .entry-images {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
       margin: 12px 0;
     }
-    
+
     .entry-images img {
       width: 100%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 10px;
       border: 1px solid rgba(15, 138, 95, 0.15);
+      cursor: pointer;
     }
-    
+
     #entryImages {
       font-size: 14px;
       color: var(--muted);
     }
-    
+
     .visitor-counter {
       font-size: 13px;
       color: var(--muted);
       margin: 0 0 8px;
     }
-    
+
     .visitor-counter span {
       color: var(--accent);
       font-weight: 600;
     }
-    
+
     .list-tabs {
       display: flex;
       gap: 8px;
       margin: 14px 0 6px;
     }
-    
+
     .list-tab {
       padding: 8px 18px;
       border: 1px solid rgba(15, 138, 95, 0.25);
@@ -817,53 +823,53 @@
       font-size: 14px;
       transition: all 0.15s ease;
     }
-    
+
     .list-tab:hover {
       background: rgba(15, 138, 95, 0.1);
     }
-    
+
     .list-tab.active {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
-    
+
     .list-item {
       padding: 16px 0;
       border-bottom: 1px solid rgba(15, 138, 95, 0.12);
     }
-    
+
     .list-item:last-child {
       border-bottom: none;
     }
-    
+
     .list-item-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 10px;
     }
-    
+
     .list-item-title {
       font-size: 16px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 4px;
     }
-    
+
     .list-item-rating {
       color: #c9a227;
       font-size: 15px;
       letter-spacing: 2px;
       margin-bottom: 6px;
     }
-    
+
     .list-item-comment {
       font-size: 13px;
       color: var(--muted);
       line-height: 1.6;
     }
-    
+
     .list-item-del {
       background: transparent;
       border: 1px solid rgba(200, 60, 60, 0.3);
@@ -874,17 +880,17 @@
       cursor: pointer;
       flex-shrink: 0;
     }
-    
+
     .list-item-del:hover {
       background: rgba(200, 60, 60, 0.1);
     }
-    
+
     .list-actions {
       display: flex;
       gap: 10px;
       margin-top: 18px;
     }
-    
+
     .list-btn {
       padding: 8px 18px;
       border-radius: 999px;
@@ -895,21 +901,21 @@
       color: var(--accent);
       transition: all 0.15s ease;
     }
-    
+
     .list-btn:hover {
       background: rgba(15, 138, 95, 0.1);
     }
-    
+
     .list-btn.primary {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
-    
+
     .list-btn.primary:hover {
       opacity: 0.9;
     }
-    
+
     .list-edit-form {
       display: flex;
       flex-direction: column;
@@ -920,7 +926,7 @@
       background: rgba(255, 255, 255, 0.6);
       margin-top: 12px;
     }
-    
+
     .list-edit-form input,
     .list-edit-form select,
     .list-edit-form textarea {
@@ -933,17 +939,17 @@
       color: var(--text);
       outline: none;
     }
-    
+
     .list-edit-form textarea {
       min-height: 60px;
       resize: vertical;
     }
-    
+
     .list-edit-form .row {
       display: flex;
       gap: 8px;
     }
-    
+
     .journal-auth {
       max-width: 360px;
       margin: 40px auto;
@@ -951,7 +957,7 @@
       flex-direction: column;
       gap: 10px;
     }
-    
+
     .journal-auth input {
       padding: 10px 14px;
       border: 1px solid rgba(15, 138, 95, 0.25);
@@ -962,11 +968,122 @@
       color: var(--text);
       outline: none;
     }
-    
+
     .journal-auth input:focus {
       border-color: var(--accent);
     }
-   
+
+    [data-theme="dark"] {
+      --bg: #0b1f16;
+      --card: #123326;
+      --text: #e6f5ec;
+      --muted: #9dc4ae;
+      --accent: #34d399;
+      --gold: #e0b84a;
+    }
+
+    [data-theme="dark"] body {
+      background-image:
+        linear-gradient(rgba(11, 31, 22, 0.85), rgba(11, 31, 22, 0.85)),
+        url("yes.webp");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-color: var(--bg);
+    }
+
+    [data-theme="dark"] .card {
+      background: rgba(18, 51, 38, 0.6);
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    [data-theme="dark"] .player-now {
+      background: rgba(52, 211, 153, 0.12);
+    }
+
+    [data-theme="dark"] .list-tab,
+    [data-theme="dark"] .list-btn,
+    [data-theme="dark"] .write-toggle,
+    [data-theme="dark"] .snake-controls button,
+    [data-theme="dark"] .player-controls button {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .player-controls .play-btn {
+      background: var(--accent);
+      color: #0b1f16;
+    }
+
+    [data-theme="dark"] .list-tab.active,
+    [data-theme="dark"] .list-btn.primary {
+      background: var(--accent);
+      color: #0b1f16;
+    }
+
+    [data-theme="dark"] .journal-overlay {
+      background: rgba(11, 31, 22, 0.96);
+    }
+
+    [data-theme="dark"] .journal-overlay-bar {
+      background: rgba(18, 51, 38, 0.9);
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    [data-theme="dark"] #journalList .card {
+      background: rgba(18, 51, 38, 0.7);
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    [data-theme="dark"] .journal-auth input,
+    [data-theme="dark"] .write-form input,
+    [data-theme="dark"] .write-form textarea,
+    [data-theme="dark"] .list-edit-form input,
+    [data-theme="dark"] .list-edit-form select,
+    [data-theme="dark"] .list-edit-form textarea {
+      background: rgba(11, 31, 22, 0.8);
+      color: var(--text);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    [data-theme="dark"] #snakeCanvas {
+      background: rgba(11, 31, 22, 0.6);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    [data-theme="dark"] .entry-images img {
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--accent);
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 9997;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.08);
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      background: rgba(18, 51, 38, 0.85);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -977,9 +1094,9 @@
         <h1>尤黎猫</h1>
         <p class="subtitle">喵喵咪咪喵喵咪，咪咪喵喵咪咪喵，喵。</p>
         <p class="status">
-      <span class="dot"></span>
-      <span>与主观题搏击ing</span>
-    </p>
+          <span class="dot"></span>
+          <span>与主观题搏击ing</span>
+        </p>
       </div>
     </header>
 
@@ -995,12 +1112,12 @@
       <p>持续探索人类世界中</p>
     </section>
 
-   <section id="music" class="card">
+    <section id="music" class="card">
       <h2>人，听音乐</h2>
       <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
         点击歌名展开列表，选一首播放。
       </p>
-    
+
       <div class="player">
         <div class="player-now" id="playerToggle" title="点击展开/收起列表">
           <div class="player-info">
@@ -1008,26 +1125,25 @@
           </div>
           <span class="player-arrow" id="playerArrow">▾</span>
         </div>
-    
+
         <div class="player-controls">
           <button id="prevBtn" title="上一首">⏮</button>
           <button id="playBtn" class="play-btn" title="播放/暂停">▶</button>
           <button id="nextBtn" title="下一首">⏭</button>
         </div>
-    
+
         <div class="player-progress">
           <span id="currentTime">0:00</span>
           <input type="range" id="progressBar" value="0" min="0" max="100" step="0.1">
           <span id="duration">0:00</span>
         </div>
-    
+
         <ul class="player-list" id="playerList"></ul>
       </div>
 
       <audio id="audio" preload="none"></audio>
-      <audio id="audio"></audio>
     </section>
-    
+
     <section id="photos" class="card">
       <h2>人，世界很美好</h2>
       <div class="gallery">
@@ -1037,7 +1153,7 @@
         <img src="photos/8.jpg" alt="照片 4" loading="lazy">
       </div>
     </section>
-    
+
     <section id="projects" class="card">
       <h2>愿望 / 清单</h2>
 
@@ -1057,12 +1173,12 @@
       <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
         记录我看过的书和电影。
       </p>
-    
+
       <div class="list-tabs">
         <button class="list-tab active" data-type="book">📚 书</button>
         <button class="list-tab" data-type="movie">🎬 电影</button>
       </div>
-    
+
       <div id="listContent"></div>
 
       <div class="list-actions">
@@ -1070,8 +1186,8 @@
         <button id="listExport" class="list-btn">导出代码</button>
       </div>
     </section>
-    
-   <section id="message" class="card">
+
+    <section id="message" class="card">
       <details class="message-toggle">
         <summary>
           <span>人，点我留言</span>
@@ -1136,845 +1252,985 @@
     </section>
   </div>
 
-   <footer>
-     <p class="visitor-counter">
-        本站访问量：<span id="busuanzi_value_site_pv">—</span> 次 ·
-        访客数：<span id="busuanzi_value_site_uv">—</span> 人
-      </p>
-      © 2026 尤黎猫 · 世界在我脚下
-    </footer>
-  
+  <footer>
+    <p class="visitor-counter">
+      本站访问量：<span id="busuanzi_value_site_pv">—</span> 次 ·
+      访客数：<span id="busuanzi_value_site_uv">—</span> 人
+    </p>
+    © 2026 尤黎猫 · 世界在我脚下
+  </footer>
+
   <a href="#" class="back-to-top" title="返回顶部">↑</a>
-    
+
   <div class="lightbox" id="lightbox">
-      <span class="lightbox-close">&times;</span>
-      <img id="lightboxImg" src="" alt="">
-    </div>
+    <span class="lightbox-close">&times;</span>
+    <img id="lightboxImg" src="" alt="">
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- 
-  <script>
-      (function () {
-        var lightbox = document.getElementById('lightbox');
-        var lightboxImg = document.getElementById('lightboxImg');
-    
-        document.querySelectorAll('.gallery img').forEach(function (img) {
-          img.addEventListener('click', function () {
-            lightboxImg.src = img.src;
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-          });
-        });
-    
-        function close() {
-          lightbox.classList.remove('active');
-          lightboxImg.src = '';
-          document.body.style.overflow = '';
-        }
-    
-        lightbox.addEventListener('click', function (e) {
-          if (e.target === lightboxImg) return;
-          close();
-        });
-    
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') close();
-        });
-      })();
-    </script>
 
-    <script>
-      (function () {
-        var canvas = document.getElementById('snakeCanvas');
-        if (!canvas) return;
-        var ctx = canvas.getContext('2d');
-        var scoreEl = document.getElementById('snakeScore');
-        var bestEl = document.getElementById('snakeBest');
-        var startBtn = document.getElementById('snakeStart');
-    
-        var GRID = 20;
-        var CELL = canvas.width / GRID;
-        var snake, dir, nextDir, food, score, timer, running;
-    
-        var BEST_KEY = 'snake_best';
-        var best = parseInt(localStorage.getItem(BEST_KEY) || '0', 10);
-        bestEl.textContent = best;
-    
-        function reset() {
-          snake = [{ x: 10, y: 10 }];
-          dir = { x: 1, y: 0 };
-          nextDir = { x: 1, y: 0 };
-          score = 0;
-          scoreEl.textContent = 0;
-          placeFood();
-        }
-    
-        function placeFood() {
-          while (true) {
-            var f = {
-              x: Math.floor(Math.random() * GRID),
-              y: Math.floor(Math.random() * GRID)
-            };
-            if (!snake.some(function (s) { return s.x === f.x && s.y === f.y; })) {
-              food = f;
-              return;
-            }
-          }
-        }
-    
-        function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-          ctx.strokeStyle = 'rgba(15, 138, 95, 0.08)';
-          ctx.lineWidth = 1;
-          for (var i = 0; i <= GRID; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i * CELL, 0);
-            ctx.lineTo(i * CELL, canvas.height);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(0, i * CELL);
-            ctx.lineTo(canvas.width, i * CELL);
-            ctx.stroke();
-          }
-    
-          ctx.fillStyle = '#c9a227';
-          ctx.beginPath();
-          ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL / 2 - 2, 0, Math.PI * 2);
-          ctx.fill();
-    
-          snake.forEach(function (s, i) {
-            var alpha = i === 0 ? 1 : 0.55 + (0.45 * (snake.length - i) / snake.length);
-            ctx.fillStyle = i === 0 ? '#0f8a5f' : 'rgba(15, 138, 95, ' + alpha + ')';
-            ctx.beginPath();
-            if (ctx.roundRect) {
-              ctx.roundRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2, 4);
-            } else {
-              ctx.rect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2);
-            }
-            ctx.fill();
-          });
-        }
-    
-        function step() {
-          dir = nextDir;
-          var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-    
-          if (
-            head.x < 0 || head.x >= GRID ||
-            head.y < 0 || head.y >= GRID ||
-            snake.some(function (s) { return s.x === head.x && s.y === head.y; })
-          ) {
-            gameOver();
+  <script>
+    (function () {
+      var lightbox = document.getElementById('lightbox');
+      var lightboxImg = document.getElementById('lightboxImg');
+
+      document.querySelectorAll('.gallery img').forEach(function (img) {
+        img.addEventListener('click', function () {
+          lightboxImg.src = img.src;
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      function close() {
+        lightbox.classList.remove('active');
+        lightboxImg.src = '';
+        document.body.style.overflow = '';
+      }
+
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightboxImg) return;
+        close();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') close();
+      });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var canvas = document.getElementById('snakeCanvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var scoreEl = document.getElementById('snakeScore');
+      var bestEl = document.getElementById('snakeBest');
+      var startBtn = document.getElementById('snakeStart');
+
+      var GRID = 20;
+      var CELL = canvas.width / GRID;
+      var snake, dir, nextDir, food, score, timer, running;
+
+      var BEST_KEY = 'snake_best';
+      var best = parseInt(localStorage.getItem(BEST_KEY) || '0', 10);
+      bestEl.textContent = best;
+
+      function reset() {
+        snake = [{ x: 10, y: 10 }];
+        dir = { x: 1, y: 0 };
+        nextDir = { x: 1, y: 0 };
+        score = 0;
+        scoreEl.textContent = 0;
+        placeFood();
+      }
+
+      function placeFood() {
+        while (true) {
+          var f = {
+            x: Math.floor(Math.random() * GRID),
+            y: Math.floor(Math.random() * GRID)
+          };
+          if (!snake.some(function (s) { return s.x === f.x && s.y === f.y; })) {
+            food = f;
             return;
           }
-    
-          snake.unshift(head);
-    
-          if (head.x === food.x && head.y === food.y) {
-            score += 10;
-            scoreEl.textContent = score;
-            placeFood();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = 'rgba(15, 138, 95, 0.08)';
+        ctx.lineWidth = 1;
+        for (var i = 0; i <= GRID; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * CELL, 0);
+          ctx.lineTo(i * CELL, canvas.height);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, i * CELL);
+          ctx.lineTo(canvas.width, i * CELL);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#c9a227';
+        ctx.beginPath();
+        ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL / 2 - 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        snake.forEach(function (s, i) {
+          var alpha = i === 0 ? 1 : 0.55 + (0.45 * (snake.length - i) / snake.length);
+          ctx.fillStyle = i === 0 ? '#0f8a5f' : 'rgba(15, 138, 95, ' + alpha + ')';
+          ctx.beginPath();
+          if (ctx.roundRect) {
+            ctx.roundRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2, 4);
           } else {
-            snake.pop();
+            ctx.rect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2);
           }
-    
-          draw();
-        }
-    
-        function gameOver() {
-          clearInterval(timer);
-          running = false;
-          startBtn.disabled = false;
-          startBtn.textContent = '再玩一次';
-    
-          if (score > best) {
-            best = score;
-            localStorage.setItem(BEST_KEY, best);
-            bestEl.textContent = best;
-          }
-    
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = '#fff';
-          ctx.font = 'bold 26px system-ui, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 10);
-          ctx.font = '16px system-ui, sans-serif';
-          ctx.fillText('得分：' + score, canvas.width / 2, canvas.height / 2 + 24);
-        }
-    
-        function start() {
-          reset();
-          draw();
-          clearInterval(timer);
-          running = true;
-          startBtn.disabled = true;
-          startBtn.textContent = '游戏中...';
-          timer = setInterval(step, 220);
-        }
-    
-        function turn(x, y) {
-          if (dir.x === -x && dir.y === -y) return;
-          nextDir = { x: x, y: y };
-        }
-    
-        document.addEventListener('keydown', function (e) {
-          var k = e.key.toLowerCase();
-          if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].indexOf(k) !== -1) {
-            e.preventDefault();
-          }
-          if (!running) return;
-          if (k === 'arrowup' || k === 'w') turn(0, -1);
-          if (k === 'arrowdown' || k === 's') turn(0, 1);
-          if (k === 'arrowleft' || k === 'a') turn(-1, 0);
-          if (k === 'arrowright' || k === 'd') turn(1, 0);
+          ctx.fill();
         });
-    
-        document.querySelectorAll('.snake-controls button').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            if (!running) return;
-            var d = btn.dataset.dir;
-            if (d === 'up') turn(0, -1);
-            if (d === 'down') turn(0, 1);
-            if (d === 'left') turn(-1, 0);
-            if (d === 'right') turn(1, 0);
-          });
-        });
-    
-        startBtn.addEventListener('click', start);
-    
+      }
+
+      function step() {
+        dir = nextDir;
+        var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+        if (
+          head.x < 0 || head.x >= GRID ||
+          head.y < 0 || head.y >= GRID ||
+          snake.some(function (s) { return s.x === head.x && s.y === head.y; })
+        ) {
+          gameOver();
+          return;
+        }
+
+        snake.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+          score += 10;
+          scoreEl.textContent = score;
+          placeFood();
+        } else {
+          snake.pop();
+        }
+
+        draw();
+      }
+
+      function gameOver() {
+        clearInterval(timer);
+        running = false;
+        startBtn.disabled = false;
+        startBtn.textContent = '再玩一次';
+
+        if (score > best) {
+          best = score;
+          localStorage.setItem(BEST_KEY, best);
+          bestEl.textContent = best;
+        }
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 26px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 10);
+        ctx.font = '16px system-ui, sans-serif';
+        ctx.fillText('得分：' + score, canvas.width / 2, canvas.height / 2 + 24);
+      }
+
+      function start() {
         reset();
         draw();
-      })();
-    </script>
+        clearInterval(timer);
+        running = true;
+        startBtn.disabled = true;
+        startBtn.textContent = '游戏中...';
+        timer = setInterval(step, 220);
+      }
 
-    <script>
-      (function () {
-        var audio = document.getElementById('audio');
-        if (!audio) return;
-    
-        var songs = [
-          { title: "time machine",  src: "music/time machine.mp3" },
-          { title: "诀别书",  src: "music/诀别书.mp3" },
-          { title: "happiness is a butterfly", src: "music/happiness is a butterfly.mp3" },
-          { title: "the bird song",  src: "music/the bird song.mp3" },
-          { title: "bluebird",  src: "music/bluebird.mp3" },
-          { title: "let the light in",  src: "music/let the light in.mp3" },
-          { title: "yellow submarine",  src: "music/yellow submarine.mp3" },
-          { title: "running up till that hill",  src: "music/running up till that hill.mp3" }
-        ];
-    
-        var current = 0;
-    
-        var playBtn = document.getElementById('playBtn');
-        var prevBtn = document.getElementById('prevBtn');
-        var nextBtn = document.getElementById('nextBtn');
-        var titleEl = document.getElementById('playerTitle');
-        var artistEl = document.getElementById('playerArtist');
-        var listEl = document.getElementById('playerList');
-        var toggleEl = document.getElementById('playerToggle');
-        var progressBar = document.getElementById('progressBar');
-        var currentTimeEl = document.getElementById('currentTime');
-        var durationEl = document.getElementById('duration');
-    
-        function fmt(sec) {
-          if (!isFinite(sec)) return '0:00';
-          var m = Math.floor(sec / 60);
-          var s = Math.floor(sec % 60);
-          return m + ':' + (s < 10 ? '0' : '') + s;
+      function turn(x, y) {
+        if (dir.x === -x && dir.y === -y) return;
+        nextDir = { x: x, y: y };
+      }
+
+      document.addEventListener('keydown', function (e) {
+        var k = e.key.toLowerCase();
+        if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].indexOf(k) !== -1) {
+          e.preventDefault();
         }
-    
-        function renderList() {
-          listEl.innerHTML = '';
-          songs.forEach(function (song, i) {
-            var li = document.createElement('li');
-            li.dataset.index = i;
-            li.innerHTML = '<span class="idx">' + (i + 1) + '</span><span>' +
-              song.title + '</span>';
-            li.addEventListener('click', function () {
-              load(i, true);
-            });
-            listEl.appendChild(li);
+        if (!running) return;
+        if (k === 'arrowup' || k === 'w') turn(0, -1);
+        if (k === 'arrowdown' || k === 's') turn(0, 1);
+        if (k === 'arrowleft' || k === 'a') turn(-1, 0);
+        if (k === 'arrowright' || k === 'd') turn(1, 0);
+      });
+
+      document.querySelectorAll('.snake-controls button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!running) return;
+          var d = btn.dataset.dir;
+          if (d === 'up') turn(0, -1);
+          if (d === 'down') turn(0, 1);
+          if (d === 'left') turn(-1, 0);
+          if (d === 'right') turn(1, 0);
+        });
+      });
+
+      startBtn.addEventListener('click', start);
+
+      reset();
+      draw();
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var audio = document.getElementById('audio');
+      if (!audio) return;
+
+      var songs = [
+        { title: "time machine",  src: "music/time machine.mp3" },
+        { title: "诀别书",  src: "music/诀别书.mp3" },
+        { title: "happiness is a butterfly", src: "music/happiness is a butterfly.mp3" },
+        { title: "the bird song",  src: "music/the bird song.mp3" },
+        { title: "bluebird",  src: "music/bluebird.mp3" },
+        { title: "let the light in",  src: "music/let the light in.mp3" },
+        { title: "yellow submarine",  src: "music/yellow submarine.mp3" },
+        { title: "running up till that hill",  src: "music/running up till that hill.mp3" }
+      ];
+
+      var current = 0;
+
+      var playBtn = document.getElementById('playBtn');
+      var prevBtn = document.getElementById('prevBtn');
+      var nextBtn = document.getElementById('nextBtn');
+      var titleEl = document.getElementById('playerTitle');
+      var listEl = document.getElementById('playerList');
+      var toggleEl = document.getElementById('playerToggle');
+      var progressBar = document.getElementById('progressBar');
+      var currentTimeEl = document.getElementById('currentTime');
+      var durationEl = document.getElementById('duration');
+
+      function fmt(sec) {
+        if (!isFinite(sec)) return '0:00';
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      function renderList() {
+        listEl.innerHTML = '';
+        songs.forEach(function (song, i) {
+          var li = document.createElement('li');
+          li.dataset.index = i;
+          li.innerHTML = '<span class="idx">' + (i + 1) + '</span><span>' +
+            song.title + '</span>';
+          li.addEventListener('click', function () {
+            load(i, true);
           });
+          listEl.appendChild(li);
+        });
+      }
+
+      function updateListState() {
+        Array.prototype.forEach.call(listEl.children, function (li, i) {
+          li.classList.toggle('active', i === current);
+          li.classList.toggle('playing', i === current && !audio.paused);
+        });
+      }
+
+      function load(i, autoplay) {
+        current = (i + songs.length) % songs.length;
+        var song = songs[current];
+        audio.src = song.src;
+        titleEl.textContent = song.title;
+        progressBar.value = 0;
+        currentTimeEl.textContent = '0:00';
+        durationEl.textContent = '0:00';
+        updateListState();
+        if (autoplay) audio.play();
+      }
+
+      playBtn.addEventListener('click', function () {
+        if (!audio.src) {
+          load(0, true);
+          return;
         }
-    
-        function updateListState() {
-          Array.prototype.forEach.call(listEl.children, function (li, i) {
-            li.classList.toggle('active', i === current);
-            li.classList.toggle('playing', i === current && !audio.paused);
-          });
-        }
-    
-        function load(i, autoplay) {
-          current = (i + songs.length) % songs.length;
-          var song = songs[current];
-          audio.src = song.src;
-          titleEl.textContent = song.title;
-          artistEl.textContent = song.artist;
-          progressBar.value = 0;
-          currentTimeEl.textContent = '0:00';
-          durationEl.textContent = '0:00';
-          updateListState();
-          if (autoplay) audio.play();
-        }
-    
-        playBtn.addEventListener('click', function () {
-          if (!audio.src) {
-            load(0, true);
-            return;
-          }
-          if (audio.paused) audio.play();
-          else audio.pause();
-        });
-    
-        prevBtn.addEventListener('click', function () {
-          load(current - 1, !audio.paused);
-        });
-    
-        nextBtn.addEventListener('click', function () {
-          load(current + 1, !audio.paused);
-        });
-    
-        audio.addEventListener('play', function () {
-          playBtn.textContent = '⏸';
-          updateListState();
-        });
-    
-        audio.addEventListener('pause', function () {
-          playBtn.textContent = '▶';
-          updateListState();
-        });
-    
-        audio.addEventListener('timeupdate', function () {
-          if (!audio.duration) return;
-          progressBar.value = (audio.currentTime / audio.duration) * 100;
-          currentTimeEl.textContent = fmt(audio.currentTime);
-        });
-    
-        audio.addEventListener('loadedmetadata', function () {
-          durationEl.textContent = fmt(audio.duration);
-        });
-    
-        audio.addEventListener('ended', function () {
-          load(current + 1, true);
-        });
-    
-        progressBar.addEventListener('input', function () {
-          if (!audio.duration) return;
-          audio.currentTime = (progressBar.value / 100) * audio.duration;
-        });
-    
-        toggleEl.addEventListener('click', function () {
-          toggleEl.classList.toggle('open');
-          listEl.classList.toggle('open');
-        });
-    
-        renderList();
-        load(0, false);
-    
-        // 打开网页自动尝试播放第一首
-        var autoPlayPromise = audio.play();
-        if (autoPlayPromise !== undefined) {
-          autoPlayPromise.catch(function () {
-            var unlock = function () {
-              audio.play().catch(function () {});
-              ['click', 'scroll', 'keydown', 'touchstart'].forEach(function (evt) {
-                document.removeEventListener(evt, unlock);
-              });
-            };
+        if (audio.paused) audio.play();
+        else audio.pause();
+      });
+
+      prevBtn.addEventListener('click', function () {
+        load(current - 1, !audio.paused);
+      });
+
+      nextBtn.addEventListener('click', function () {
+        load(current + 1, !audio.paused);
+      });
+
+      audio.addEventListener('play', function () {
+        playBtn.textContent = '⏸';
+        updateListState();
+      });
+
+      audio.addEventListener('pause', function () {
+        playBtn.textContent = '▶';
+        updateListState();
+      });
+
+      audio.addEventListener('timeupdate', function () {
+        if (!audio.duration) return;
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+        currentTimeEl.textContent = fmt(audio.currentTime);
+      });
+
+      audio.addEventListener('loadedmetadata', function () {
+        durationEl.textContent = fmt(audio.duration);
+      });
+
+      audio.addEventListener('ended', function () {
+        load(current + 1, true);
+      });
+
+      progressBar.addEventListener('input', function () {
+        if (!audio.duration) return;
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      });
+
+      toggleEl.addEventListener('click', function () {
+        toggleEl.classList.toggle('open');
+        listEl.classList.toggle('open');
+      });
+
+      renderList();
+      load(0, false);
+
+      var autoPlayPromise = audio.play();
+      if (autoPlayPromise !== undefined) {
+        autoPlayPromise.catch(function () {
+          var unlock = function () {
+            audio.play().catch(function () {});
             ['click', 'scroll', 'keydown', 'touchstart'].forEach(function (evt) {
-              document.addEventListener(evt, unlock, { once: true, passive: true });
+              document.removeEventListener(evt, unlock);
             });
+          };
+          ['click', 'scroll', 'keydown', 'touchstart'].forEach(function (evt) {
+            document.addEventListener(evt, unlock, { once: true, passive: true });
           });
-        }
-      })();
-    </script>
-  
-    <div id="journalOverlay" class="journal-overlay">
-      <div class="journal-overlay-bar">
-        <button id="journalClose" class="journal-close">← 返回</button>
-        <span class="journal-title">Journal</span>
-      </div>
-      <div class="journal-overlay-content">
-        <div class="container">
-          <h1>Journal</h1>
-          <p class="lead">记录萌萌的生活呀~</p>
-    
-          <div id="journalAuth" class="journal-auth">
-            <p class="write-hint">请登录后查看你的日志。</p>
-            <input type="email" id="authEmail" placeholder="邮箱">
-            <input type="password" id="authPassword" placeholder="密码">
+        });
+      }
+    })();
+  </script>
+
+  <div id="journalOverlay" class="journal-overlay">
+    <div class="journal-overlay-bar">
+      <button id="journalClose" class="journal-close">← 返回</button>
+      <span class="journal-title">Journal</span>
+    </div>
+    <div class="journal-overlay-content">
+      <div class="container">
+        <h1>Journal</h1>
+        <p class="lead">记录萌萌的生活呀~</p>
+
+        <div id="journalAuth" class="journal-auth">
+          <p class="write-hint">请登录后查看你的日志。</p>
+          <input type="email" id="authEmail" placeholder="邮箱">
+          <input type="password" id="authPassword" placeholder="密码">
+          <div class="write-actions">
+            <button id="authLogin" class="primary">登录</button>
+            <button id="authLogout" style="display:none;">退出登录</button>
+          </div>
+          <p class="write-hint" id="authMsg"></p>
+        </div>
+
+        <div id="journalMain" style="display:none;">
+          <button id="toggleWrite" class="write-toggle">✍️ 写新日志</button>
+
+          <div id="writeForm" class="write-form" style="display:none;">
+            <input type="date" id="entryDate">
+            <input type="text" id="entryTitle" placeholder="标题">
+            <textarea id="entryBody" placeholder="正文..."></textarea>
+            <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
+            <input type="file" id="entryImages" accept="image/*" multiple>
+            <p class="write-hint" id="imageHint">可上传多张图片，会自动压缩。</p>
             <div class="write-actions">
-              <button id="authLogin" class="primary">登录</button>
-              <button id="authLogout" style="display:none;">退出登录</button>
+              <button id="saveEntry" class="primary">保存</button>
+              <button id="cancelWrite">取消</button>
             </div>
-            <p class="write-hint" id="authMsg"></p>
           </div>
-          
-          <div id="journalMain" style="display:none;">
-            <button id="toggleWrite" class="write-toggle">✍️ 写新日志</button>
-          
-            <div id="writeForm" class="write-form" style="display:none;">
-              <input type="date" id="entryDate">
-              <input type="text" id="entryTitle" placeholder="标题">
-              <textarea id="entryBody" placeholder="正文..."></textarea>
-              <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
-              <div class="write-actions">
-                <button id="saveEntry" class="primary">保存</button>
-                <button id="cancelWrite">取消</button>
-              </div>
-            </div>
-          
-            <div id="journalList"></div>
-          </div>
+
+          <div id="journalList"></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      (function () {
-        var overlay = document.getElementById('journalOverlay');
-        if (!overlay) return;
-    
-        // ===== 换成你自己的 =====
-        var SUPABASE_URL = 'https://wwzfsxhvvgbdkdodtsfb.supabase.co';
-        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emZzeGh2dmdiZGtkb2R0c2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA2NTIsImV4cCI6MjEwNjA4NjY1Mn0.aA_X2lSNwrGWAkIyjMEcMIyqHCVTUQ4ZtnyTr1CeLxI';
-        // ========================
-    
-        var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-        var authEl = document.getElementById('journalAuth');
-        var mainEl = document.getElementById('journalMain');
-        var emailEl = document.getElementById('authEmail');
-        var passEl = document.getElementById('authPassword');
-        var loginBtn = document.getElementById('authLogin');
-        var logoutBtn = document.getElementById('authLogout');
-        var msgEl = document.getElementById('authMsg');
-    
-        var listEl = document.getElementById('journalList');
-        var toggleBtn = document.getElementById('toggleWrite');
-        var formEl = document.getElementById('writeForm');
-        var dateInput = document.getElementById('entryDate');
-        var titleInput = document.getElementById('entryTitle');
-        var bodyInput = document.getElementById('entryBody');
-        var tagsInput = document.getElementById('entryTags');
-    
-        var today = new Date();
-        var yyyy = today.getFullYear();
-        var mm = String(today.getMonth() + 1).padStart(2, '0');
-        var dd = String(today.getDate()).padStart(2, '0');
-        if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
-    
-        function esc(s) {
-          return String(s)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  <script>
+    (function () {
+      var overlay = document.getElementById('journalOverlay');
+      if (!overlay) return;
+
+      var SUPABASE_URL = 'https://wwzfsxhvvgbdkdodtsfb.supabase.co';
+      var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emZzeGh2dmdiZGtkb2R0c2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA2NTIsImV4cCI6MjEwNjA4NjY1Mn0.aA_X2lSNwrGWAkIyjMEcMIyqHCVTUQ4ZtnyTr1CeLxI';
+
+      var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      var authEl = document.getElementById('journalAuth');
+      var mainEl = document.getElementById('journalMain');
+      var emailEl = document.getElementById('authEmail');
+      var passEl = document.getElementById('authPassword');
+      var loginBtn = document.getElementById('authLogin');
+      var logoutBtn = document.getElementById('authLogout');
+      var msgEl = document.getElementById('authMsg');
+
+      var listEl = document.getElementById('journalList');
+      var toggleBtn = document.getElementById('toggleWrite');
+      var formEl = document.getElementById('writeForm');
+      var dateInput = document.getElementById('entryDate');
+      var titleInput = document.getElementById('entryTitle');
+      var bodyInput = document.getElementById('entryBody');
+      var tagsInput = document.getElementById('entryTags');
+      var imagesInput = document.getElementById('entryImages');
+      var hintEl = document.getElementById('imageHint');
+
+      var MAX_IMAGES = 6;
+      var MAX_WIDTH = 1200;
+      var QUALITY = 0.8;
+      var pendingImages = [];
+
+      var today = new Date();
+      var yyyy = today.getFullYear();
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var dd = String(today.getDate()).padStart(2, '0');
+      if (dateInput) dateInput.value = yyyy + '-' + mm + '-' + dd;
+
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function textToHtml(text) {
+        return text.split(/\n+/).filter(function (l) { return l.trim(); })
+          .map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+      }
+
+      function compressImage(file) {
+        return new Promise(function (resolve, reject) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var img = new Image();
+            img.onload = function () {
+              var canvas = document.createElement('canvas');
+              var scale = Math.min(1, MAX_WIDTH / img.width);
+              canvas.width = Math.round(img.width * scale);
+              canvas.height = Math.round(img.height * scale);
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              canvas.toBlob(function (blob) {
+                if (blob) resolve(blob);
+                else reject(new Error('压缩失败'));
+              }, 'image/jpeg', QUALITY);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function uploadImage(blob) {
+        return sb.auth.getUser().then(function (res) {
+          var userId = res.data && res.data.user && res.data.user.id;
+          if (!userId) throw new Error('未登录');
+          var filename = userId + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+          return sb.storage.from('journal-images').upload(filename, blob, {
+            contentType: 'image/jpeg'
+          }).then(function (up) {
+            if (up.error) throw up.error;
+            var pub = sb.storage.from('journal-images').getPublicUrl(filename);
+            return pub.data.publicUrl;
+          });
+        });
+      }
+
+      function renderCard(item) {
+        var tagsHtml = '';
+        if (item.tags && item.tags.length) {
+          tagsHtml = '<div class="entry-tags">' +
+            item.tags.map(function (t) {
+              return '<span class="tag">' + esc(t) + '</span>';
+            }).join('') + '</div>';
         }
-        function textToHtml(text) {
-          return text.split(/\n+/).filter(function (l) { return l.trim(); })
-            .map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+
+        var imagesHtml = '';
+        if (item.images && item.images.length) {
+          imagesHtml = '<div class="entry-images">' +
+            item.images.map(function (url) {
+              return '<img src="' + esc(url) + '" alt="日志图片" loading="lazy">';
+            }).join('') + '</div>';
         }
-    
-        function renderCard(item) {
-          var tagsHtml = '';
-          if (item.tags && item.tags.length) {
-            tagsHtml = '<div class="entry-tags">' +
-              item.tags.map(function (t) {
-                return '<span class="tag">' + esc(t) + '</span>';
-              }).join('') + '</div>';
-          }
-    
-          var card = document.createElement('article');
-          card.className = 'card';
-          card.innerHTML =
-            '<div class="entry-head">' +
-              '<div>' +
-                '<div class="entry-date">' + esc(item.date) + '</div>' +
-                '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
-              '</div>' +
-              '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
+
+        var card = document.createElement('article');
+        card.className = 'card visible';
+        card.innerHTML =
+          '<div class="entry-head">' +
+            '<div>' +
+              '<div class="entry-date">' + esc(item.date) + '</div>' +
+              '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
             '</div>' +
-            '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
-            tagsHtml;
-    
-          card.querySelector('.entry-delete').addEventListener('click', function () {
-            if (!confirm('确定删除？')) return;
-            sb.from('journal').delete().eq('id', item.id).then(function () {
-              loadEntries();
+            '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
+          '</div>' +
+          '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
+          imagesHtml +
+          tagsHtml;
+
+        card.querySelector('.entry-delete').addEventListener('click', function () {
+          if (!confirm('确定删除？')) return;
+          sb.from('journal').delete().eq('id', item.id).then(function () {
+            loadEntries();
+          });
+        });
+
+        card.querySelectorAll('.entry-images img').forEach(function (img) {
+          img.addEventListener('click', function () {
+            var lb = document.getElementById('lightbox');
+            var lbImg = document.getElementById('lightboxImg');
+            if (lb && lbImg) {
+              lbImg.src = img.src;
+              lb.classList.add('active');
+              document.body.style.overflow = 'hidden';
+            }
+          });
+        });
+
+        return card;
+      }
+
+      function loadEntries() {
+        sb.from('journal')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .then(function (res) {
+            if (res.error) {
+              console.error(res.error);
+              return;
+            }
+            listEl.innerHTML = '';
+            if (!res.data.length) {
+              listEl.innerHTML = '<p style="color:var(--muted);font-size:14px;">还没有日志。</p>';
+              return;
+            }
+            res.data.forEach(function (item) {
+              listEl.appendChild(renderCard(item));
             });
           });
-    
-          return card;
+      }
+
+      function showLoggedIn(isLoggedIn) {
+        if (isLoggedIn) {
+          authEl.style.display = 'none';
+          mainEl.style.display = 'block';
+          logoutBtn.style.display = 'inline-block';
+          loadEntries();
+        } else {
+          authEl.style.display = 'flex';
+          mainEl.style.display = 'none';
+          logoutBtn.style.display = 'none';
         }
-    
-        function loadEntries() {
-          sb.from('journal')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .then(function (res) {
-              if (res.error) {
-                console.error(res.error);
-                return;
-              }
-              listEl.innerHTML = '';
-              if (!res.data.length) {
-                listEl.innerHTML = '<p style="color:var(--muted);font-size:14px;">还没有日志。</p>';
-                return;
-              }
-              res.data.forEach(function (item) {
-                listEl.appendChild(renderCard(item));
+      }
+
+      loginBtn.addEventListener('click', function () {
+        var email = emailEl.value.trim();
+        var password = passEl.value;
+        if (!email || !password) {
+          msgEl.textContent = '邮箱和密码都要填。';
+          return;
+        }
+        msgEl.textContent = '登录中...';
+        sb.auth.signInWithPassword({ email: email, password: password })
+          .then(function (res) {
+            if (res.error) {
+              msgEl.textContent = '登录失败：' + res.error.message;
+              return;
+            }
+            msgEl.textContent = '';
+            passEl.value = '';
+            showLoggedIn(true);
+          });
+      });
+
+      logoutBtn.addEventListener('click', function () {
+        sb.auth.signOut().then(function () {
+          showLoggedIn(false);
+        });
+      });
+
+      sb.auth.getSession().then(function (res) {
+        var session = res.data && res.data.session;
+        showLoggedIn(!!session);
+      });
+
+      document.querySelectorAll('a[href="journal.html"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          overlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      document.getElementById('journalClose').addEventListener('click', function () {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+
+      toggleBtn.addEventListener('click', function () {
+        var hidden = formEl.style.display === 'none';
+        formEl.style.display = hidden ? 'flex' : 'none';
+        toggleBtn.textContent = hidden ? '收起' : '✍️ 写新日志';
+      });
+
+      document.getElementById('cancelWrite').addEventListener('click', function () {
+        formEl.style.display = 'none';
+        toggleBtn.textContent = '✍️ 写新日志';
+        titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
+        if (imagesInput) imagesInput.value = '';
+        pendingImages = [];
+        if (hintEl) hintEl.textContent = '可上传多张图片，会自动压缩。';
+      });
+
+      if (imagesInput) {
+        imagesInput.addEventListener('change', function () {
+          var files = Array.from(imagesInput.files).slice(0, MAX_IMAGES);
+          if (!files.length) return;
+
+          hintEl.textContent = '正在压缩图片...';
+          pendingImages = [];
+
+          var chain = Promise.resolve();
+          files.forEach(function (f) {
+            chain = chain.then(function () {
+              return compressImage(f).then(function (blob) {
+                pendingImages.push(blob);
               });
             });
-        }
-    
-        function showLoggedIn(isLoggedIn) {
-          if (isLoggedIn) {
-            authEl.style.display = 'none';
-            mainEl.style.display = 'block';
-            logoutBtn.style.display = 'inline-block';
-            loadEntries();
-          } else {
-            authEl.style.display = 'flex';
-            mainEl.style.display = 'none';
-            logoutBtn.style.display = 'none';
-          }
-        }
-    
-        loginBtn.addEventListener('click', function () {
-          var email = emailEl.value.trim();
-          var password = passEl.value;
-          if (!email || !password) {
-            msgEl.textContent = '邮箱和密码都要填。';
-            return;
-          }
-          msgEl.textContent = '登录中...';
-          sb.auth.signInWithPassword({ email: email, password: password })
-            .then(function (res) {
-              if (res.error) {
-                msgEl.textContent = '登录失败：' + res.error.message;
-                return;
-              }
-              msgEl.textContent = '';
-              passEl.value = '';
-              showLoggedIn(true);
-            });
-        });
-    
-        logoutBtn.addEventListener('click', function () {
-          sb.auth.signOut().then(function () {
-            showLoggedIn(false);
+          });
+
+          chain.then(function () {
+            var totalKB = pendingImages.reduce(function (s, b) { return s + b.size; }, 0);
+            totalKB = Math.round(totalKB / 1024);
+            hintEl.textContent = '已选 ' + pendingImages.length + ' 张，约 ' + totalKB + ' KB';
+          }).catch(function () {
+            hintEl.textContent = '图片处理失败，请重试。';
           });
         });
-    
-        sb.auth.getSession().then(function (res) {
-          var session = res.data && res.data.session;
-          showLoggedIn(!!session);
-        });
-    
-        document.querySelectorAll('a[href="journal.html"]').forEach(function (a) {
-          a.addEventListener('click', function (e) {
-            e.preventDefault();
-            overlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-          });
-        });
-    
-        document.getElementById('journalClose').addEventListener('click', function () {
-          overlay.classList.remove('open');
-          document.body.style.overflow = '';
-        });
-    
-        toggleBtn.addEventListener('click', function () {
-          var hidden = formEl.style.display === 'none';
-          formEl.style.display = hidden ? 'flex' : 'none';
-          toggleBtn.textContent = hidden ? '收起' : '✍️ 写新日志';
-        });
-    
-        document.getElementById('cancelWrite').addEventListener('click', function () {
-          formEl.style.display = 'none';
-          toggleBtn.textContent = '✍️ 写新日志';
-          titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
-        });
-    
-        document.getElementById('saveEntry').addEventListener('click', function () {
-          var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
-          var title = titleInput.value.trim();
-          var body = bodyInput.value.trim();
-          var tagsRaw = tagsInput.value.trim();
-    
-          if (!title || !body) { alert('标题和正文都要填。'); return; }
-    
-          var tags = tagsRaw
-            ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
-            : [];
-    
-          sb.from('journal').insert([{
+      }
+
+      document.getElementById('saveEntry').addEventListener('click', function () {
+        var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
+        var title = titleInput.value.trim();
+        var body = bodyInput.value.trim();
+        var tagsRaw = tagsInput.value.trim();
+
+        if (!title || !body) { alert('标题和正文都要填。'); return; }
+
+        var tags = tagsRaw
+          ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
+          : [];
+
+        var saveBtn = document.getElementById('saveEntry');
+        saveBtn.disabled = true;
+        saveBtn.textContent = '保存中...';
+
+        var uploadPromise = pendingImages.length
+          ? Promise.all(pendingImages.map(uploadImage))
+          : Promise.resolve([]);
+
+        uploadPromise.then(function (urls) {
+          return sb.from('journal').insert([{
             date: date,
             title: title,
             body: body,
-            tags: tags
-          }]).then(function (res) {
-            if (res.error) {
-              alert('保存失败：' + res.error.message);
-              return;
-            }
-            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
-            formEl.style.display = 'none';
-            toggleBtn.textContent = '✍️ 写新日志';
-            loadEntries();
-          });
+            tags: tags,
+            images: urls
+          }]);
+        }).then(function (res) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = '保存';
+
+          if (res.error) {
+            alert('保存失败：' + res.error.message);
+            return;
+          }
+
+          titleInput.value = '';
+          bodyInput.value = '';
+          tagsInput.value = '';
+          if (imagesInput) imagesInput.value = '';
+          pendingImages = [];
+          if (hintEl) hintEl.textContent = '可上传多张图片，会自动压缩。';
+          formEl.style.display = 'none';
+          toggleBtn.textContent = '✍️ 写新日志';
+          loadEntries();
+        }).catch(function (err) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = '保存';
+          alert('保存失败：' + (err.message || err));
         });
-      })();
-    </script>
- 
+      });
+    })();
+  </script>
+
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
   <script>
-      (function () {
-        // ============================================
-        // 初始清单：这里的内容所有人可见
-        // 你在网页上添加的会存在本地，只有你能看到
-        // ============================================
-        var defaultItems = [
-          {
-            type: "book",
-            title: "《荆棘鸟》",
-            rating: 4.5,
-            comment: "最美好的东西只能用深痛巨创来换取。"
-          },
-          {
-            type: "movie",
-            title: "《彗星来的那一夜》",
-            rating: 5,
-            comment: "值得N刷。"
-          }
-        ];
-    
-        var STORAGE_KEY = 'my_list_items';
-        var currentType = 'book';
-    
-        function getLocal() {
-          try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-          catch (e) { return []; }
+    (function () {
+      var defaultItems = [
+        {
+          type: "book",
+          title: "《荆棘鸟》",
+          rating: 4.5,
+          comment: "最美好的东西只能用深痛巨创来换取。"
+        },
+        {
+          type: "movie",
+          title: "《彗星来的那一夜》",
+          rating: 5,
+          comment: "值得N刷。"
         }
-        function setLocal(arr) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+      ];
+
+      var STORAGE_KEY = 'my_list_items';
+      var currentType = 'book';
+
+      function getLocal() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        catch (e) { return []; }
+      }
+      function setLocal(arr) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+      }
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+      function stars(n) {
+        var s = '';
+        for (var i = 1; i <= 5; i++) s += i <= n ? '★' : '☆';
+        return s;
+      }
+
+      function render() {
+        var container = document.getElementById('listContent');
+        if (!container) return;
+
+        var local = getLocal();
+        var localFiltered = local.filter(function (it) { return it.type === currentType; });
+        var defaultFiltered = defaultItems.filter(function (it) { return it.type === currentType; });
+
+        var all = localFiltered.concat(defaultFiltered);
+
+        container.innerHTML = '';
+
+        if (!all.length) {
+          container.innerHTML = '<p style="color:var(--muted);font-size:14px;">还没有记录。</p>';
+          return;
         }
-        function esc(s) {
-          return String(s)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-        function stars(n) {
-          var s = '';
-          for (var i = 1; i <= 5; i++) s += i <= n ? '★' : '☆';
-          return s;
-        }
-    
-        function render() {
-          var container = document.getElementById('listContent');
-          if (!container) return;
-    
-          var local = getLocal();
-          var localFiltered = local.filter(function (it) { return it.type === currentType; });
-          var defaultFiltered = defaultItems.filter(function (it) { return it.type === currentType; });
-    
-          var all = localFiltered.concat(defaultFiltered);
-    
-          container.innerHTML = '';
-    
-          if (!all.length) {
-            container.innerHTML = '<p style="color:var(--muted);font-size:14px;">还没有记录。</p>';
-            return;
-          }
-    
-          all.forEach(function (item, i) {
-            var isLocal = i < localFiltered.length;
-    
-            var row = document.createElement('div');
-            row.className = 'list-item';
-            row.innerHTML =
-              '<div class="list-item-head">' +
-                '<div>' +
-                  '<div class="list-item-title">' + esc(item.title) + '</div>' +
-                  '<div class="list-item-rating">' + stars(item.rating) + '</div>' +
-                  '<div class="list-item-comment">' + esc(item.comment) + '</div>' +
-                '</div>' +
-                (isLocal ? '<button class="list-item-del" data-index="' + i + '">删除</button>' : '') +
-              '</div>';
-            container.appendChild(row);
-          });
-    
-          container.querySelectorAll('.list-item-del').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var idx = parseInt(btn.dataset.index, 10);
-              if (!confirm('删除这条？')) return;
-    
-              var arr = getLocal();
-              var count = 0;
-              for (var j = 0; j < arr.length; j++) {
-                if (arr[j].type === currentType) {
-                  if (count === idx) {
-                    arr.splice(j, 1);
-                    break;
-                  }
-                  count++;
-                }
-              }
-              setLocal(arr);
-              render();
-            });
-          });
-        }
-    
-        // 标签切换
-        document.querySelectorAll('.list-tab').forEach(function (tab) {
-          tab.addEventListener('click', function () {
-            document.querySelectorAll('.list-tab').forEach(function (t) {
-              t.classList.remove('active');
-            });
-            tab.classList.add('active');
-            currentType = tab.dataset.type;
-            render();
-          });
-        });
-    
-        // 添加
-        document.getElementById('listAdd').addEventListener('click', function () {
-          var wrap = document.getElementById('listFormWrap');
-          if (wrap) { wrap.remove(); return; }
-    
-          var form = document.createElement('div');
-          form.id = 'listFormWrap';
-          form.className = 'list-edit-form';
-          form.innerHTML =
-            '<select id="lfType">' +
-              '<option value="book">书</option>' +
-              '<option value="movie">电影</option>' +
-            '</select>' +
-            '<input id="lfTitle" placeholder="书名或片名">' +
-            '<input id="lfRating" type="number" min="1" max="5" value="5" placeholder="星级 1-5">' +
-            '<textarea id="lfComment" placeholder="短评（可选）"></textarea>' +
-            '<div class="row">' +
-              '<button id="lfSave" class="list-btn primary">保存</button>' +
-              '<button id="lfCancel" class="list-btn">取消</button>' +
-            '</div>';
-    
-          form.querySelector('#lfType').value = currentType;
-          document.getElementById('listContent').appendChild(form);
-    
-          form.querySelector('#lfSave').addEventListener('click', function () {
-            var type = form.querySelector('#lfType').value;
-            var title = form.querySelector('#lfTitle').value.trim();
-            var rating = parseInt(form.querySelector('#lfRating').value, 10);
-            var comment = form.querySelector('#lfComment').value.trim();
-    
-            if (!title) { alert('标题要填。'); return; }
-            if (isNaN(rating) || rating < 1 || rating > 5) { alert('星级填 1-5。'); return; }
-    
-            var arr = getLocal();
-            arr.unshift({ type: type, title: title, rating: rating, comment: comment });
-            setLocal(arr);
-    
-            currentType = type;
-            document.querySelectorAll('.list-tab').forEach(function (t) {
-              t.classList.toggle('active', t.dataset.type === type);
-            });
-    
-            render();
-          });
-    
-          form.querySelector('#lfCancel').addEventListener('click', function () {
-            form.remove();
-          });
-        });
-    
-        // 导出
-        document.getElementById('listExport').addEventListener('click', function () {
-          var all = getLocal().concat(defaultItems);
-          var text = JSON.stringify(all, null, 2);
-    
-          var modal = document.createElement('div');
-          modal.style.cssText =
-            'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;' +
-            'display:flex;align-items:center;justify-content:center;padding:20px;';
-    
-          modal.innerHTML =
-            '<div style="background:#fff;border-radius:14px;padding:20px;max-width:700px;width:100%;max-height:85vh;overflow:auto;">' +
-              '<p style="margin:0 0 10px;font-size:14px;color:#333;">' +
-                '复制下面内容，替换 <code>defaultItems</code> 数组，提交后所有人可见。' +
-              '</p>' +
-              '<textarea readonly style="width:100%;height:300px;font-family:monospace;font-size:12px;padding:10px;border:1px solid #ccc;border-radius:8px;">' +
-                text.replace(/</g, '&lt;') +
-              '</textarea>' +
-              '<div style="display:flex;gap:10px;margin-top:12px;">' +
-                '<button id="exportCopy" class="list-btn primary">复制</button>' +
-                '<button id="exportClose" class="list-btn">关闭</button>' +
+
+        all.forEach(function (item, i) {
+          var isLocal = i < localFiltered.length;
+
+          var row = document.createElement('div');
+          row.className = 'list-item';
+          row.innerHTML =
+            '<div class="list-item-head">' +
+              '<div>' +
+                '<div class="list-item-title">' + esc(item.title) + '</div>' +
+                '<div class="list-item-rating">' + stars(item.rating) + '</div>' +
+                '<div class="list-item-comment">' + esc(item.comment) + '</div>' +
               '</div>' +
+              (isLocal ? '<button class="list-item-del" data-index="' + i + '">删除</button>' : '') +
             '</div>';
-    
-          document.body.appendChild(modal);
-    
-          modal.querySelector('#exportCopy').addEventListener('click', function () {
-            var ta = modal.querySelector('textarea');
-            ta.select();
-            document.execCommand('copy');
-            alert('已复制。');
-          });
-    
-          modal.querySelector('#exportClose').addEventListener('click', function () {
-            modal.remove();
+          container.appendChild(row);
+        });
+
+        container.querySelectorAll('.list-item-del').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = parseInt(btn.dataset.index, 10);
+            if (!confirm('删除这条？')) return;
+
+            var arr = getLocal();
+            var count = 0;
+            for (var j = 0; j < arr.length; j++) {
+              if (arr[j].type === currentType) {
+                if (count === idx) {
+                  arr.splice(j, 1);
+                  break;
+                }
+                count++;
+              }
+            }
+            setLocal(arr);
+            render();
           });
         });
-    
-        render();
-      })();
-    </script>
-   
-    <script>
-     (function () {
-       var cards = document.querySelectorAll('.card');
-       if (!cards.length) return;
-   
-       // 不支持 IntersectionObserver 就全部显示
-       if (!('IntersectionObserver' in window)) {
-         cards.forEach(function (c) { c.classList.add('visible'); });
-         return;
-       }
-   
-       var observer = new IntersectionObserver(function (entries) {
-         entries.forEach(function (entry) {
-           if (entry.isIntersecting) {
-             // 每张卡片浮现时，给一点点随机延迟，显得更自然
-             var delay = Math.random() * 200;
-             setTimeout(function () {
-               entry.target.classList.add('visible');
-             }, delay);
-             observer.unobserve(entry.target);
-           }
-         });
-       }, {
-         threshold: 0.08,
-         rootMargin: '0px 0px -60px 0px'
-       });
-   
-       cards.forEach(function (card) {
-         observer.observe(card);
-       });
-   
-       // 第一屏的卡片立刻触发，不用等滚动
-       requestAnimationFrame(function () {
-         var vh = window.innerHeight;
-         cards.forEach(function (card) {
-           var rect = card.getBoundingClientRect();
-           if (rect.top < vh && rect.bottom > 0) {
-             card.classList.add('visible');
-             observer.unobserve(card);
-           }
-         });
-       });
-     })();
-   </script>
-  </body>
+      }
+
+      document.querySelectorAll('.list-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          document.querySelectorAll('.list-tab').forEach(function (t) {
+            t.classList.remove('active');
+          });
+          tab.classList.add('active');
+          currentType = tab.dataset.type;
+          render();
+        });
+      });
+
+      document.getElementById('listAdd').addEventListener('click', function () {
+        var wrap = document.getElementById('listFormWrap');
+        if (wrap) { wrap.remove(); return; }
+
+        var form = document.createElement('div');
+        form.id = 'listFormWrap';
+        form.className = 'list-edit-form';
+        form.innerHTML =
+          '<select id="lfType">' +
+            '<option value="book">书</option>' +
+            '<option value="movie">电影</option>' +
+          '</select>' +
+          '<input id="lfTitle" placeholder="书名或片名">' +
+          '<input id="lfRating" type="number" min="1" max="5" value="5" placeholder="星级 1-5">' +
+          '<textarea id="lfComment" placeholder="短评（可选）"></textarea>' +
+          '<div class="row">' +
+            '<button id="lfSave" class="list-btn primary">保存</button>' +
+            '<button id="lfCancel" class="list-btn">取消</button>' +
+          '</div>';
+
+        form.querySelector('#lfType').value = currentType;
+        document.getElementById('listContent').appendChild(form);
+
+        form.querySelector('#lfSave').addEventListener('click', function () {
+          var type = form.querySelector('#lfType').value;
+          var title = form.querySelector('#lfTitle').value.trim();
+          var rating = parseInt(form.querySelector('#lfRating').value, 10);
+          var comment = form.querySelector('#lfComment').value.trim();
+
+          if (!title) { alert('标题要填。'); return; }
+          if (isNaN(rating) || rating < 1 || rating > 5) { alert('星级填 1-5。'); return; }
+
+          var arr = getLocal();
+          arr.unshift({ type: type, title: title, rating: rating, comment: comment });
+          setLocal(arr);
+
+          currentType = type;
+          document.querySelectorAll('.list-tab').forEach(function (t) {
+            t.classList.toggle('active', t.dataset.type === type);
+          });
+
+          render();
+        });
+
+        form.querySelector('#lfCancel').addEventListener('click', function () {
+          form.remove();
+        });
+      });
+
+      document.getElementById('listExport').addEventListener('click', function () {
+        var all = getLocal().concat(defaultItems);
+        var text = JSON.stringify(all, null, 2);
+
+        var modal = document.createElement('div');
+        modal.style.cssText =
+          'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;' +
+          'display:flex;align-items:center;justify-content:center;padding:20px;';
+
+        modal.innerHTML =
+          '<div style="background:#fff;border-radius:14px;padding:20px;max-width:700px;width:100%;max-height:85vh;overflow:auto;">' +
+            '<p style="margin:0 0 10px;font-size:14px;color:#333;">' +
+              '复制下面内容，替换 <code>defaultItems</code> 数组，提交后所有人可见。' +
+            '</p>' +
+            '<textarea readonly style="width:100%;height:300px;font-family:monospace;font-size:12px;padding:10px;border:1px solid #ccc;border-radius:8px;">' +
+              text.replace(/</g, '&lt;') +
+            '</textarea>' +
+            '<div style="display:flex;gap:10px;margin-top:12px;">' +
+              '<button id="exportCopy" class="list-btn primary">复制</button>' +
+              '<button id="exportClose" class="list-btn">关闭</button>' +
+            '</div>' +
+          '</div>';
+
+        document.body.appendChild(modal);
+
+        modal.querySelector('#exportCopy').addEventListener('click', function () {
+          var ta = modal.querySelector('textarea');
+          ta.select();
+          document.execCommand('copy');
+          alert('已复制。');
+        });
+
+        modal.querySelector('#exportClose').addEventListener('click', function () {
+          modal.remove();
+        });
+      });
+
+      render();
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var cards = document.querySelectorAll('.container > .card');
+      if (!cards.length) return;
+
+      if (!('IntersectionObserver' in window)) {
+        cards.forEach(function (c) { c.classList.add('visible'); });
+        return;
+      }
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var delay = Math.random() * 200;
+            setTimeout(function () {
+              entry.target.classList.add('visible');
+            }, delay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -60px 0px'
+      });
+
+      cards.forEach(function (card) {
+        observer.observe(card);
+      });
+
+      requestAnimationFrame(function () {
+        var vh = window.innerHeight;
+        cards.forEach(function (card) {
+          var rect = card.getBoundingClientRect();
+          if (rect.top < vh && rect.bottom > 0) {
+            card.classList.add('visible');
+            observer.unobserve(card);
+          }
+        });
+      });
+    })();
+  </script>
+
+  <button id="themeToggle" class="theme-toggle" title="切换主题">🌙</button>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      if (!btn) return;
+
+      var root = document.documentElement;
+
+      function updateIcon() {
+        var isDark = root.getAttribute('data-theme') === 'dark';
+        btn.textContent = isDark ? '☀️' : '🌙';
+        btn.title = isDark ? '切换到浅色' : '切换到深色';
+      }
+
+      updateIcon();
+
+      btn.addEventListener('click', function () {
+        var isDark = root.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          root.removeAttribute('data-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          root.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+        }
+        updateIcon();
+      });
+    })();
+  </script>
+</body>
 </html>
