@@ -551,6 +551,11 @@
       transform: scale(1.06);
     }
 
+    .player-controls button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    
     .player-controls .play-btn {
       width: 56px;
       height: 56px;
@@ -1646,6 +1651,7 @@
           <button id="prevBtn" title="上一首">⏮</button>
           <button id="playBtn" class="play-btn" title="播放/暂停">▶</button>
           <button id="nextBtn" title="下一首">⏭</button>
+          <button id="shuffleBtn" title="随机播放：关">🔀</button>
         </div>
 
         <div class="player-progress">
@@ -2015,10 +2021,12 @@
       ];
 
       var current = 0;
+      var shuffle = false;
 
       var playBtn = document.getElementById('playBtn');
       var prevBtn = document.getElementById('prevBtn');
       var nextBtn = document.getElementById('nextBtn');
+      var shuffleBtn = document.getElementById('shuffleBtn');
       var titleEl = document.getElementById('playerTitle');
       var listEl = document.getElementById('playerList');
       var toggleEl = document.getElementById('playerToggle');
@@ -2076,12 +2084,39 @@
       });
 
       prevBtn.addEventListener('click', function () {
-        load(current - 1, !audio.paused);
+        if (shuffle) {
+          load(pickRandom(), !audio.paused);
+        } else {
+          load(current - 1, !audio.paused);
+        }
       });
 
       nextBtn.addEventListener('click', function () {
-        load(current + 1, !audio.paused);
+        if (shuffle) {
+          load(pickRandom(), !audio.paused);
+        } else {
+          load(current + 1, !audio.paused);
+        }
       });
+
+            // 随机选一首（不和当前重复）
+      function pickRandom() {
+        if (songs.length <= 1) return current;
+        var idx;
+        do {
+          idx = Math.floor(Math.random() * songs.length);
+        } while (idx === current);
+        return idx;
+      }
+
+      // 随机播放开关
+      if (shuffleBtn) {
+        shuffleBtn.addEventListener('click', function () {
+          shuffle = !shuffle;
+          shuffleBtn.classList.toggle('active', shuffle);
+          shuffleBtn.title = shuffle ? '随机播放：开' : '随机播放：关';
+        });
+      }
 
       audio.addEventListener('play', function () {
         playBtn.textContent = '⏸';
@@ -2104,7 +2139,11 @@
       });
 
       audio.addEventListener('ended', function () {
-        load(current + 1, true);
+        if (shuffle) {
+          load(pickRandom(), true);
+        } else {
+          load(current + 1, true);
+        }
       });
 
       progressBar.addEventListener('input', function () {
