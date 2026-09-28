@@ -2340,6 +2340,50 @@
         box-shadow: 0 0 0 0 rgba(15, 138, 95, 0);
       }
     }
+
+        /* ========== 歌单切换 ========== */
+    .playlist-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 4px;
+    }
+
+    .playlist-tab {
+      padding: 5px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--accent);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s ease;
+    }
+
+    .playlist-tab:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    .playlist-tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .playlist-tab.add {
+      border-style: dashed;
+    }
+
+    [data-theme="dark"] .playlist-tab {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .playlist-tab.active {
+      background: var(--accent);
+      color: #0b1f16;
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -2422,6 +2466,7 @@
           <input type="range" id="volumeBar" value="100" min="0" max="100" step="1">
         </div>
 
+        <div class="playlist-tabs" id="playlistTabs"></div>
         <ul class="player-list" id="playerList"></ul>
       </div>
 
@@ -2787,9 +2832,13 @@
 
       var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      var songs = [];
+      var songs = [];              // 当前歌单的歌曲
+      var allSongs = [];           // 全部歌曲
+      var playlists = [];          // 所有歌单名
+      var currentPlaylist = '默认';
       var current = 0;
       var shuffle = false;
+      var tabsEl = document.getElementById('playlistTabs');
 
       var playBtn = document.getElementById('playBtn');
       var prevBtn = document.getElementById('prevBtn');
@@ -2812,16 +2861,85 @@
       }
 
       // 加载歌曲
-      function loadSongs() {
+            function loadSongs() {
         return sb.from('songs')
           .select('*')
           .order('sort_order', { ascending: true })
           .order('created_at', { ascending: true })
           .then(function (res) {
             if (res.error) { console.error(res.error); return; }
-            songs = res.data || [];
-            renderList();
+            allSongs = res.data || [];
+
+            // 收集所有歌单名
+            var set = { '默认': true };
+            allSongs.forEach(function (s) {
+              set[s.playlist || '默认'] = true;
+            });
+            playlists = Object.keys(set);
+
+            // 如果当前歌单被删了，回到默认
+            if (playlists.indexOf(currentPlaylist) === -1) {
+              currentPlaylist = '默认';
+            }
+
+            applyPlaylist();
           });
+      }
+
+      // 按当前歌单筛选
+      function applyPlaylist() {
+        songs = allSongs.filter(function (s) {
+          return (s.playlist || '默认') === currentPlaylist;
+        });
+        renderPlaylistTabs();
+        renderList();
+        current = 0;
+        if (songs.length) {
+          load(0, false);
+        } else {
+          titleEl.textContent = '这个歌单还没有歌曲';
+          listEl.innerHTML = '';
+        }
+      }
+
+      // 渲染歌单标签
+      function renderPlaylistTabs() {
+        if (!tabsEl) return;
+        tabsEl.innerHTML = '';
+
+        playlists.forEach(function (name) {
+          var btn = document.createElement('button');
+          btn.className = 'playlist-tab' + (name === currentPlaylist ? ' active' : '');
+          btn.textContent = name;
+          btn.dataset.name = name;
+
+          btn.addEventListener('click', function () {
+            if (name === currentPlaylist) return;
+            currentPlaylist = name;
+            applyPlaylist();
+          });
+
+          tabsEl.appendChild(btn);
+        });
+
+        // 加号：新建歌单
+        var addBtn = document.createElement('button');
+        addBtn.className = 'playlist-tab add';
+        addBtn.textContent = '+ 歌单';
+        addBtn.addEventListener('click', function () {
+          var name = prompt('新歌单名字：');
+          if (!name) return;
+          name = name.trim();
+          if (!name) return;
+          if (playlists.indexOf(name) !== -1) {
+            alert('这个歌单已经存在。');
+            return;
+          }
+          playlists.push(name);
+          currentPlaylist = name;
+          applyPlaylist();
+        });
+        tabsEl.appendChild(addBtn);
       }
 
       function renderList() {
@@ -2982,8 +3100,15 @@
           var form = document.createElement('div');
           form.id = 'songFormWrap';
           form.className = 'list-edit-form';
+          var playlistOptions = playlists.map(function (p) {
+            return '<option value="' + p + '">' + p + '</option>';
+          }).join('');
+
           form.innerHTML =
             '<input id="songTitleInput" placeholder="歌曲名">' +
+            '<select id="songPlaylistInput" style="padding:8px 12px;border:1px solid rgba(15,138,95,0.25);border-radius:8px;font:inherit;font-size:14px;background:rgba(255,255,255,0.9);color:var(--text);outline:none;">' +
+              playlistOptions +
+            '</select>' +
             '<input type="file" id="songFileInput" accept="audio/*">' +
             '<p class="write-hint" id="songHint">选一首 mp3，会自动上传。</p>' +
             '<div class="row">' +
@@ -3025,6 +3150,8 @@
               var ext = (selectedFile.name.split('.').pop() || 'mp3').toLowerCase();
               var filename = userId + '/' + Date.now() + '.' + ext;
 
+                           var chosenPlaylist = form.querySelector('#songPlaylistInput').value || '默认';
+
               return sb.storage.from('music').upload(filename, selectedFile, {
                 contentType: selectedFile.type || 'audio/mpeg'
               }).then(function (up) {
@@ -3033,7 +3160,8 @@
                 return sb.from('songs').insert([{
                   title: title,
                   url: pub.data.publicUrl,
-                  sort_order: songs.length + 1
+                  playlist: chosenPlaylist,
+                  sort_order: allSongs.length + 1
                 }]);
               }).then(function (ins) {
                 if (ins.error) throw ins.error;
