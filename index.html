@@ -2184,6 +2184,40 @@
       background: rgba(11, 31, 22, 0.8);
       border-color: rgba(52, 211, 153, 0.25);
     }
+
+        /* 阅读模式打开时，右上角按钮竖排到右侧 */
+    body.reader-active .auth-toggle,
+    body.reader-active .font-family-toggle,
+    body.reader-active .font-toggle,
+    body.reader-active .theme-toggle {
+      right: 12px;
+    }
+
+    body.reader-active .auth-toggle {
+      top: 84px;
+    }
+
+    body.reader-active .font-family-toggle {
+      top: 136px;
+    }
+
+    body.reader-active .font-toggle {
+      top: 188px;
+    }
+
+    body.reader-active .theme-toggle {
+      top: 240px;
+    }
+
+    /* 手机上阅读模式隐藏这四个按钮，避免挡内容 */
+    @media (max-width: 520px) {
+      body.reader-active .auth-toggle,
+      body.reader-active .font-family-toggle,
+      body.reader-active .font-toggle,
+      body.reader-active .theme-toggle {
+        display: none;
+      }
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -4878,6 +4912,7 @@
         overlay.classList.add('open');
         overlay.scrollTop = 0;
         document.body.style.overflow = 'hidden';
+        document.body.classList.add('reader-active');
 
         // 点图片用 lightbox 放大
         content.querySelectorAll('.reader-images img').forEach(function (img) {
@@ -4892,9 +4927,10 @@
         });
       }
 
-      function closeReader() {
+     function closeReader() {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
+        document.body.classList.remove('reader-active');
       }
 
       // 代理点击：任何 .entry-read 按钮
