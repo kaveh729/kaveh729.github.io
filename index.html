@@ -1227,17 +1227,18 @@
           }
         }
 
-            .list-panel {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.45s ease, opacity 0.35s ease;
-    }
-
-    .list-panel.open {
-      max-height: 3000px;
-      opacity: 1;
-    }
+        .list-panel {
+          max-height: 0;
+          overflow: hidden;
+          opacity: 0;
+          transition: max-height 1.5s cubic-bezier(0.22, 1, 0.36, 1),
+                      opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    
+        .list-panel.open {
+          max-height: 3000px;
+          opacity: 1;
+        }
   </style>
 </head>
 <body>
