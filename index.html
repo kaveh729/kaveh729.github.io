@@ -2179,6 +2179,10 @@
       }
 
       document.addEventListener('keydown', function (e) {
+        // 正在输入框 / 文本域里打字时，不拦截键盘
+        var tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+
         var k = e.key.toLowerCase();
         if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].indexOf(k) !== -1) {
           e.preventDefault();
