@@ -1751,20 +1751,36 @@
       renderList();
       load(0, false);
 
-      var autoPlayPromise = audio.play();
-      if (autoPlayPromise !== undefined) {
-        autoPlayPromise.catch(function () {
-          var unlock = function () {
-            audio.play().catch(function () {});
-            ['click', 'scroll', 'keydown', 'touchstart'].forEach(function (evt) {
-              document.removeEventListener(evt, unlock);
+            // 尝试自动播放
+      function tryAutoPlay() {
+        var p = audio.play();
+        if (p !== undefined) {
+          p.catch(function () {
+            // 被拦截，等用户第一次交互再播
+            var unlock = function () {
+              audio.play().catch(function () {});
+              ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+                document.removeEventListener(evt, unlock);
+              });
+            };
+            ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+              document.addEventListener(evt, unlock, { once: true, passive: true });
             });
-          };
-          ['click', 'scroll', 'keydown', 'touchstart'].forEach(function (evt) {
-            document.addEventListener(evt, unlock, { once: true, passive: true });
           });
-        });
+        }
       }
+
+      // 页面加载时先试一次
+      tryAutoPlay();
+
+      // 再加一层：任何交互都立刻播（如果还没在播）
+      ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+        document.addEventListener(evt, function () {
+          if (audio.paused) {
+            audio.play().catch(function () {});
+          }
+        }, { once: true, passive: true });
+      });
     })();
   </script>
 
