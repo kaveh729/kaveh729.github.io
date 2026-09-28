@@ -1801,6 +1801,32 @@
     [data-theme="dark"] .status-edit-btn:hover {
       background: rgba(52, 211, 153, 0.12);
     }
+
+        .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .entry-words {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .journal-stats {
+      text-align: right;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .journal-stats strong {
+      color: var(--accent);
+      font-size: 15px;
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -2586,6 +2612,7 @@
             </div>
           </div>
 
+          <div class="journal-stats" id="journalStats"></div>
           <div id="collectionFilter" class="collection-filter"></div>
 
           <div class="search-row">
@@ -2678,6 +2705,27 @@
             return safe.replace(re, '<span class="search-highlight">$1</span>');
           }
           
+                    // 统计字数：中文按字算，英文按单词算
+          function countWords(text) {
+            if (!text) return 0;
+            var s = String(text).trim();
+            if (!s) return 0;
+
+            // 去掉多余空格
+            s = s.replace(/\s+/g, ' ');
+
+            // 中文字符（含日文假名、全角标点）
+            var cn = s.match(/[\u4e00-\u9fa5\u3040-\u30ff\uff00-\uffef]/g);
+            var cnCount = cn ? cn.length : 0;
+
+            // 去掉中文后剩下的英文单词
+            var en = s.replace(/[\u4e00-\u9fa5\u3040-\u30ff\uff00-\uffef]/g, ' ');
+            var enArr = en.match(/[a-zA-Z0-9]+/g);
+            var enCount = enArr ? enArr.length : 0;
+
+            return cnCount + enCount;
+          }
+
           function textToHtml(text) {
             if (!text) return '';
             var lines = text.split('\n');
@@ -2791,7 +2839,10 @@
            card.innerHTML =
               '<div class="entry-head">' +
                 '<div>' +
-                  '<div class="entry-date">' + esc(formatDateTime(entryDate(item))) + '</div>' +
+                  '<div class="entry-meta">' +
+                    '<span>' + esc(formatDateTime(entryDate(item))) + '</span>' +
+                    '<span class="entry-words">' + countWords(item.body) + ' 字</span>' +
+                  '</div>' +
                   '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
                   '<div class="entry-actions">' +
@@ -2974,6 +3025,21 @@
 
               return true;
             });
+
+                        // 更新总字数
+            var statsEl = document.getElementById('journalStats');
+            if (statsEl) {
+              var totalWords = 0;
+              var totalEntries = filtered.length;
+              filtered.forEach(function (item) {
+                totalWords += countWords(item.body) + countWords(item.title);
+              });
+              if (totalEntries) {
+                statsEl.innerHTML = '共 <strong>' + totalEntries + '</strong> 篇 · 总计 <strong>' + totalWords.toLocaleString() + '</strong> 字';
+              } else {
+                statsEl.innerHTML = '';
+              }
+            }
       
             listEl.innerHTML = '';
             timelineEl.innerHTML = '';
