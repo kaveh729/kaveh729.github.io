@@ -2384,6 +2384,43 @@
       background: var(--accent);
       color: #0b1f16;
     }
+
+        /* ========== 置顶 ========== */
+    .entry-pin {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(201, 162, 39, 0.4);
+      color: var(--gold);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .entry-pin:hover {
+      background: rgba(201, 162, 39, 0.12);
+    }
+
+    .entry-pin.active {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .journal-month-label.pinned-label {
+      color: var(--gold);
+      border-bottom-color: rgba(201, 162, 39, 0.4);
+    }
+
+    [data-theme="dark"] .entry-pin {
+      border-color: rgba(224, 184, 74, 0.4);
+    }
+
+    [data-theme="dark"] .entry-pin.active {
+      background: var(--gold);
+      color: #0b1f16;
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -3564,7 +3601,8 @@
                   '</div>' +
                   '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
-                  '<div class="entry-actions">' +
+                 '<div class="entry-actions">' +
+                  '<button class="entry-pin' + (item.pinned ? ' active' : '') + '" data-id="' + item.id + '">' + (item.pinned ? '📌 已置顶' : '📌 置顶') + '</button>' +
                   '<button class="entry-read" data-id="' + item.id + '">阅读</button>' +
                   '<button class="entry-edit" data-id="' + item.id + '">编辑</button>' +
                   '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
@@ -3585,6 +3623,16 @@
             card.querySelector('.entry-edit').addEventListener('click', function () {
               openEditForm(item);
             });
+
+              var pinBtn = card.querySelector('.entry-pin');
+            if (pinBtn) {
+              pinBtn.addEventListener('click', function () {
+                sb.from('journal').update({ pinned: !item.pinned }).eq('id', item.id).then(function (res) {
+                  if (res.error) { alert('操作失败：' + res.error.message); return; }
+                  loadEntries();
+                });
+              });
+            }
       
             card.querySelectorAll('.entry-images img').forEach(function (img) {
               img.addEventListener('click', function () {
@@ -3814,9 +3862,13 @@
               return;
             }
       
-            // 按月份分组
+                        // 置顶的单独放一组
+            var pinnedItems = filtered.filter(function (item) { return item.pinned; });
+            var normalItems = filtered.filter(function (item) { return !item.pinned; });
+
+            // 按月份分组（只对非置顶的）
             var groups = {};
-            filtered.forEach(function (item) {
+            normalItems.forEach(function (item) {
               var key = monthKey(entryDate(item));
               if (!groups[key]) groups[key] = [];
               groups[key].push(item);
@@ -3835,6 +3887,38 @@
               });
             });
       
+                        // 先渲染置顶组
+            if (pinnedItems.length) {
+              var pinKey = '__pinned__';
+
+              var pinTItem = document.createElement('div');
+              pinTItem.className = 'timeline-item';
+              pinTItem.textContent = '📌 置顶';
+              pinTItem.dataset.target = 'month-' + pinKey;
+              pinTItem.addEventListener('click', function () {
+                var target = document.getElementById('month-' + pinKey);
+                if (target) {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              });
+              timelineEl.appendChild(pinTItem);
+
+              var pinGroup = document.createElement('div');
+              pinGroup.className = 'journal-month-group';
+              pinGroup.id = 'month-' + pinKey;
+
+              var pinLabel = document.createElement('div');
+              pinLabel.className = 'journal-month-label pinned-label';
+              pinLabel.textContent = '📌 置顶';
+              pinGroup.appendChild(pinLabel);
+
+              pinnedItems.forEach(function (item) {
+                pinGroup.appendChild(renderCard(item));
+              });
+
+              listEl.appendChild(pinGroup);
+            }
+
             keys.forEach(function (key) {
               var items = groups[key];
               var label = monthLabel(entryDate(items[0]));
