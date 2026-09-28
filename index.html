@@ -1597,6 +1597,24 @@
       background: var(--accent);
       color: #0b1f16;
     }
+
+        .player-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-list li .song-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #songFileInput {
+      font-size: 14px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -1662,6 +1680,10 @@
 
         <ul class="player-list" id="playerList"></ul>
       </div>
+
+        <div class="list-actions">
+          <button id="songAdd" class="list-btn primary">+ 添加歌曲</button>
+        </div>
 
       <audio id="audio" preload="none"></audio>
     </section>
@@ -1996,32 +2018,19 @@
     })();
   </script>
 
-  <script>
+    <script>
     (function () {
       var audio = document.getElementById('audio');
       if (!audio) return;
 
-      var songs = [
-        { title: "time machine",  src: "music/time machine.mp3" },
-        { title: "诀别书",  src: "music/诀别书.mp3" },
-        { title: "Lithium Pools",  src: "music/Lithium Pools.mp3" },
-        { title: "Marshrutka Girl",  src: "music/Marshrutka Girl.mp3" },
-        { title: "The Clouds In Camarillo",  src: "music/The Clouds In Camarillo.mp3" },
-        { title: "the other side of paradise",  src: "music/the other side of paradise.mp3" },
-        { title: "happiness is a butterfly", src: "music/happiness is a butterfly.mp3" },
-        { title: "the bird song",  src: "music/the bird song.mp3" },
-        { title: "Soraya",  src: "music/Soraya.mp3" },
-        { title: "Some Days",  src: "music/Some Days.mp3" },
-        { title: "3Jane",  src: "music/3Jane.mp3" },
-        { title: "Pico Union",  src: "music/Pico Union.mp3" },
-        { title: "bluebird",  src: "music/bluebird.mp3" },
-        { title: "let the light in",  src: "music/let the light in.mp3" },
-        { title: "yellow submarine",  src: "music/yellow submarine.mp3" },
-        { title: "running up till that hill",  src: "music/running up till that hill.mp3" }
-      ];
+      var SUPABASE_URL = 'https://wwzfsxhvvgbdkdodtsfb.supabase.co';
+      var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emZzeGh2dmdiZGtkb2R0c2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA2NTIsImV4cCI6MjEwNjA4NjY1Mn0.aA_X2lSNwrGWAkIyjMEcMIyqHCVTUQ4ZtnyTr1CeLxI';
 
+      var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      var songs = [];
       var current = 0;
-      var shuffle = true;
+      var shuffle = false;
 
       var playBtn = document.getElementById('playBtn');
       var prevBtn = document.getElementById('prevBtn');
@@ -2041,13 +2050,25 @@
         return m + ':' + (s < 10 ? '0' : '') + s;
       }
 
+      // 加载歌曲
+      function loadSongs() {
+        return sb.from('songs')
+          .select('*')
+          .order('sort_order', { ascending: true })
+          .order('created_at', { ascending: true })
+          .then(function (res) {
+            if (res.error) { console.error(res.error); return; }
+            songs = res.data || [];
+            renderList();
+          });
+      }
+
       function renderList() {
         listEl.innerHTML = '';
         songs.forEach(function (song, i) {
           var li = document.createElement('li');
           li.dataset.index = i;
-          li.innerHTML = '<span class="idx">' + (i + 1) + '</span><span>' +
-            song.title + '</span>';
+          li.innerHTML = '<span class="idx">' + (i + 1) + '</span><span class="song-title">' + song.title + '</span>';
           li.addEventListener('click', function () {
             load(i, true);
           });
@@ -2063,9 +2084,10 @@
       }
 
       function load(i, autoplay) {
+        if (!songs.length) return;
         current = (i + songs.length) % songs.length;
         var song = songs[current];
-        audio.src = song.src;
+        audio.src = song.url;
         titleEl.textContent = song.title;
         progressBar.value = 0;
         currentTimeEl.textContent = '0:00';
@@ -2074,42 +2096,30 @@
         if (autoplay) audio.play();
       }
 
+      function pickRandom() {
+        if (songs.length <= 1) return current;
+        var idx;
+        do { idx = Math.floor(Math.random() * songs.length); } while (idx === current);
+        return idx;
+      }
+
       playBtn.addEventListener('click', function () {
-        if (!audio.src) {
-          load(0, true);
-          return;
-        }
+        if (!songs.length) return;
+        if (!audio.src) { load(0, true); return; }
         if (audio.paused) audio.play();
         else audio.pause();
       });
 
       prevBtn.addEventListener('click', function () {
-        if (shuffle) {
-          load(pickRandom(), !audio.paused);
-        } else {
-          load(current - 1, !audio.paused);
-        }
+        if (shuffle) load(pickRandom(), !audio.paused);
+        else load(current - 1, !audio.paused);
       });
 
       nextBtn.addEventListener('click', function () {
-        if (shuffle) {
-          load(pickRandom(), !audio.paused);
-        } else {
-          load(current + 1, !audio.paused);
-        }
+        if (shuffle) load(pickRandom(), !audio.paused);
+        else load(current + 1, !audio.paused);
       });
 
-            // 随机选一首（不和当前重复）
-      function pickRandom() {
-        if (songs.length <= 1) return current;
-        var idx;
-        do {
-          idx = Math.floor(Math.random() * songs.length);
-        } while (idx === current);
-        return idx;
-      }
-
-      // 随机播放开关
       if (shuffleBtn) {
         shuffleBtn.addEventListener('click', function () {
           shuffle = !shuffle;
@@ -2139,11 +2149,8 @@
       });
 
       audio.addEventListener('ended', function () {
-        if (shuffle) {
-          load(pickRandom(), true);
-        } else {
-          load(current + 1, true);
-        }
+        if (shuffle) load(pickRandom(), true);
+        else load(current + 1, true);
       });
 
       progressBar.addEventListener('input', function () {
@@ -2156,42 +2163,141 @@
         listEl.classList.toggle('open');
       });
 
-      renderList();
-      load(0, false);
+      // 上传新歌
+      var songAddBtn = document.getElementById('songAdd');
+      if (songAddBtn) {
+        songAddBtn.addEventListener('click', function () {
+          var wrap = document.getElementById('songFormWrap');
+          if (wrap) { wrap.remove(); return; }
 
-            // 尝试自动播放
-      function tryAutoPlay() {
-        var p = audio.play();
-        if (p !== undefined) {
-          p.catch(function () {
-            // 被拦截，等用户第一次交互再播
-            var unlock = function () {
-              audio.play().catch(function () {});
-              ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
-                document.removeEventListener(evt, unlock);
+          var form = document.createElement('div');
+          form.id = 'songFormWrap';
+          form.className = 'list-edit-form';
+          form.innerHTML =
+            '<input id="songTitleInput" placeholder="歌曲名">' +
+            '<input type="file" id="songFileInput" accept="audio/*">' +
+            '<p class="write-hint" id="songHint">选一首 mp3，会自动上传。</p>' +
+            '<div class="row">' +
+              '<button id="songSave" class="list-btn primary">保存</button>' +
+              '<button id="songCancel" class="list-btn">取消</button>' +
+            '</div>';
+
+          listEl.parentNode.insertBefore(form, listEl.nextSibling);
+
+          var fileInput = form.querySelector('#songFileInput');
+          var hint = form.querySelector('#songHint');
+          var selectedFile = null;
+
+          fileInput.addEventListener('change', function () {
+            selectedFile = fileInput.files && fileInput.files[0];
+            if (selectedFile) {
+              var mb = (selectedFile.size / 1024 / 1024).toFixed(1);
+              hint.textContent = '已选：' + selectedFile.name + '（' + mb + ' MB）';
+            }
+          });
+
+          form.querySelector('#songCancel').addEventListener('click', function () {
+            form.remove();
+          });
+
+          form.querySelector('#songSave').addEventListener('click', function () {
+            var title = form.querySelector('#songTitleInput').value.trim();
+            if (!title) { alert('歌名要填。'); return; }
+            if (!selectedFile) { alert('请选一个音频文件。'); return; }
+
+            var saveBtn = form.querySelector('#songSave');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '上传中...';
+
+            sb.auth.getUser().then(function (res) {
+              var userId = res.data && res.data.user && res.data.user.id;
+              if (!userId) throw new Error('请先登录。');
+
+              var ext = (selectedFile.name.split('.').pop() || 'mp3').toLowerCase();
+              var filename = userId + '/' + Date.now() + '.' + ext;
+
+              return sb.storage.from('music').upload(filename, selectedFile, {
+                contentType: selectedFile.type || 'audio/mpeg'
+              }).then(function (up) {
+                if (up.error) throw up.error;
+                var pub = sb.storage.from('music').getPublicUrl(filename);
+                return sb.from('songs').insert([{
+                  title: title,
+                  url: pub.data.publicUrl,
+                  sort_order: songs.length + 1
+                }]);
+              }).then(function (ins) {
+                if (ins.error) throw ins.error;
+                return loadSongs();
+              }).then(function () {
+                form.remove();
+                alert('添加成功！');
               });
-            };
-            ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
-              document.addEventListener(evt, unlock, { once: true, passive: true });
+            }).catch(function (err) {
+              saveBtn.disabled = false;
+              saveBtn.textContent = '保存';
+              alert('添加失败：' + (err.message || err));
             });
           });
-        }
+        });
       }
 
-      // 页面加载时先试一次
-      tryAutoPlay();
+      // 删除歌曲（长按列表项）
+      listEl.addEventListener('contextmenu', function (e) {
+        var li = e.target.closest('li');
+        if (!li) return;
+        e.preventDefault();
 
-      // 再加一层：任何交互都立刻播（如果还没在播）
-      ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
-        document.addEventListener(evt, function () {
-          if (audio.paused) {
-            audio.play().catch(function () {});
+        var idx = parseInt(li.dataset.index, 10);
+        var song = songs[idx];
+        if (!song) return;
+
+        if (!confirm('删除《' + song.title + '》？')) return;
+
+        sb.auth.getUser().then(function (res) {
+          var userId = res.data && res.data.user && res.data.user.id;
+          if (!userId) { alert('请先登录。'); return; }
+
+          // 从 Storage 删文件（如果是 Supabase 存储的）
+          var url = song.url;
+          if (url.indexOf('/music/') !== -1) {
+            try {
+              var path = url.split('/music/')[1].split('?')[0];
+              sb.storage.from('music').remove([path]);
+            } catch (e) {}
           }
-        }, { once: true, passive: true });
+
+          sb.from('songs').delete().eq('id', song.id).then(function (del) {
+            if (del.error) { alert('删除失败：' + del.error.message); return; }
+            if (current >= idx) current = Math.max(0, current - 1);
+            loadSongs();
+          });
+        });
+      });
+
+      // 初始加载
+      loadSongs().then(function () {
+        if (songs.length) {
+          load(0, false);
+          // 尝试自动播放
+          var p = audio.play();
+          if (p !== undefined) {
+            p.catch(function () {
+              var unlock = function () {
+                audio.play().catch(function () {});
+                ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+                  document.removeEventListener(evt, unlock);
+                });
+              };
+              ['click', 'scroll', 'keydown', 'touchstart', 'pointerdown'].forEach(function (evt) {
+                document.addEventListener(evt, unlock, { once: true, passive: true });
+              });
+            });
+          }
+        }
       });
     })();
   </script>
-
   <div id="journalOverlay" class="journal-overlay">
     <div class="journal-overlay-bar">
       <button id="journalClose" class="journal-close">← 返回</button>
