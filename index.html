@@ -2218,6 +2218,19 @@
         display: none;
       }
     }
+
+        .live-word-count {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 2px 0 0;
+      text-align: right;
+    }
+
+    .live-word-count strong {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -3018,6 +3031,7 @@
               <button type="button" data-cmd="removeFormat" title="清除格式">✕</button>
             </div>
             <div id="entryBody" class="rich-editor" contenteditable="true" data-placeholder="正文..."></div>
+            <p class="live-word-count" id="entryLiveCount">0 字</p>
             <input type="text" id="entryCollection" list="collectionList" placeholder="合集（可选，如：读书笔记、旅行）">
             <datalist id="collectionList"></datalist>
             <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
@@ -3369,6 +3383,7 @@
                 '<button type="button" data-cmd="removeFormat" title="清除格式">✕</button>' +
               '</div>' +
               '<div id="editBody" class="rich-editor" contenteditable="true" data-placeholder="正文..."></div>' +
+              '<p class="live-word-count" id="editLiveCount">0 字</p>' +
               '<input type="text" id="editCollection" list="collectionList" value="' + esc(item.collection || '') + '" placeholder="合集（可选）">' +
               '<input type="text" id="editTags" value="' + esc((item.tags || []).join(', ')) + '" placeholder="标签，用逗号分隔">' +
               '<p class="write-hint">图片不能在这里改，只能改文字内容。</p>' +
@@ -3394,6 +3409,19 @@
               }
               initToolbar(form.querySelector('#editToolbar'), editBodyEl);
             }
+
+                          // 编辑：实时字数
+              (function () {
+                var countEl = form.querySelector('#editLiveCount');
+                if (!countEl) return;
+                function update() {
+                  var n = countWords(editBodyEl.textContent || '');
+                  countEl.innerHTML = '<strong>' + n.toLocaleString() + '</strong> 字';
+                }
+                editBodyEl.addEventListener('input', update);
+                editBodyEl.addEventListener('blur', update);
+                update();
+              })();
 
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -3766,6 +3794,7 @@
             formEl.style.display = 'none';
             toggleBtn.textContent = '✍️ 写新日志';
             titleInput.value = ''; bodyInput.innerHTML = ''; tagsInput.value = '';
+            updateEntryCount();
             if (collectionInput) collectionInput.value = '';
             if (imagesInput) imagesInput.value = '';
             pendingImages = [];
@@ -3821,6 +3850,20 @@
 
           initToolbar(document.getElementById('entryToolbar'), bodyInput);
 
+                    // 写日志：实时字数
+          function updateEntryCount() {
+            var el = document.getElementById('entryLiveCount');
+            if (!el) return;
+            var n = countWords(bodyInput.textContent || '');
+            el.innerHTML = '<strong>' + n.toLocaleString() + '</strong> 字';
+          }
+
+          if (bodyInput) {
+            bodyInput.addEventListener('input', updateEntryCount);
+            bodyInput.addEventListener('blur', updateEntryCount);
+          }
+          updateEntryCount();
+
           // 保存日志
           document.getElementById('saveEntry').addEventListener('click', function () {
             var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
@@ -3864,6 +3907,7 @@
               titleInput.value = '';
               bodyInput.innerHTML = '';
               tagsInput.value = '';
+              updateEntryCount();
               if (collectionInput) collectionInput.value = '';
               if (imagesInput) imagesInput.value = '';
               pendingImages = [];
