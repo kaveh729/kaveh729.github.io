@@ -49,6 +49,29 @@
       margin-bottom: 32px;
     }
 
+        .clock {
+      margin-left: auto;
+      text-align: right;
+      flex-shrink: 0;
+      padding-right: 56px;
+    }
+
+    .clock-time {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+      line-height: 1.2;
+    }
+
+    .clock-date {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
     .avatar {
       width: 88px;
       height: 88px;
@@ -159,7 +182,7 @@
       color: var(--accent);
     }
 
-    @media (max-width: 520px) {
+        @media (max-width: 520px) {
       header {
         flex-direction: column;
         align-items: flex-start;
@@ -167,6 +190,16 @@
 
       h1 {
         font-size: 26px;
+      }
+
+      .clock {
+        margin-left: 0;
+        padding-right: 0;
+        text-align: left;
+      }
+
+      .clock-time {
+        font-size: 22px;
       }
     }
 
@@ -1377,6 +1410,9 @@
           <span>与主观题搏击ing</span>
         </p>
       </div>
+      <div class="clock">
+        <div class="clock-time" id="clockTime">--:--:--</div>
+        <div class="clock-date" id="clockDate">----</div>
     </header>
 
     <nav>
@@ -2923,5 +2959,37 @@
       });
     })();
   </script>
-</body>
+
+    <script>
+    (function () {
+      var clockTimeEl = document.getElementById('clockTime');
+      var clockDateEl = document.getElementById('clockDate');
+      if (!clockTimeEl || !clockDateEl) return;
+
+      var weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+
+      function pad(n) {
+        return n < 10 ? '0' + n : '' + n;
+      }
+
+      function updateClock() {
+        var now = new Date();
+
+        var hh = pad(now.getHours());
+        var mm = pad(now.getMinutes());
+        var ss = pad(now.getSeconds());
+        clockTimeEl.textContent = hh + ':' + mm + ':' + ss;
+
+        var y = now.getFullYear();
+        var mo = now.getMonth() + 1;
+        var d = now.getDate();
+        var w = weekDays[now.getDay()];
+        clockDateEl.textContent = y + '年' + mo + '月' + d + '日 ' + w;
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+    })();
+  </script>
+ </body>
 </html>
