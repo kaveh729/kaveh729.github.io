@@ -3,11 +3,13 @@
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 
-  <script>
+    <script>
     (function () {
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
+      var fs = localStorage.getItem('fontSize') || 'medium';
+      document.documentElement.setAttribute('data-font', fs);
     })();
   </script>
 
@@ -1641,6 +1643,86 @@
       accent-color: var(--accent);
       cursor: pointer;
       max-width: 160px;
+    }
+
+        .font-toggle {
+      position: fixed;
+      top: 16px;
+      right: 128px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, font-size 0.2s ease;
+    }
+
+    .font-toggle:hover {
+      transform: scale(1.08);
+    }
+
+    .font-toggle[data-size="small"] {
+      font-size: 14px;
+    }
+
+    .font-toggle[data-size="medium"] {
+      font-size: 18px;
+    }
+
+    .font-toggle[data-size="large"] {
+      font-size: 22px;
+    }
+
+    [data-theme="dark"] .font-toggle {
+      background: rgba(18, 51, 38, 0.85);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    /* 字体大小变量 */
+    :root {
+      --font-scale: 1;
+    }
+
+    html[data-font="small"] {
+      --font-scale: 0.88;
+    }
+
+    html[data-font="medium"] {
+      --font-scale: 1;
+    }
+
+    html[data-font="large"] {
+      --font-scale: 1.15;
+    }
+
+    /* 让正文字号跟着变 */
+    body {
+      font-size: calc(16px * var(--font-scale));
+    }
+
+    .entry-body,
+    .entry-title,
+    .card h2,
+    .player-title,
+    .list-item-title,
+    .list-item-comment,
+    .project h3,
+    .project p,
+    .subtitle,
+    .status,
+    .now-text,
+    .write-form input,
+    .write-form textarea {
+      font-size: calc(1em * var(--font-scale));
     }
   </style>
 </head>
@@ -3325,6 +3407,7 @@
   </script>
 
   <button id="authToggle" class="auth-toggle" title="登录 / 退出">🔑</button>
+  <button id="fontToggle" class="font-toggle" title="字体大小：中">A</button>
   <button id="themeToggle" class="theme-toggle" title="切换主题">🌙</button>
 
   <script>
@@ -3789,6 +3872,39 @@
       });
 
       loadWishes();
+    })();
+   </script>
+
+    <script>
+    (function () {
+      var btn = document.getElementById('fontToggle');
+      if (!btn) return;
+
+      var root = document.documentElement;
+      var sizes = ['small', 'medium', 'large'];
+
+      function applySize(size) {
+        root.setAttribute('data-font', size);
+        btn.setAttribute('data-size', size);
+
+        if (size === 'small') btn.title = '字体大小：小';
+        else if (size === 'large') btn.title = '字体大小：大';
+        else btn.title = '字体大小：中';
+      }
+
+      // 读取当前
+      var current = localStorage.getItem('fontSize') || 'medium';
+      if (sizes.indexOf(current) === -1) current = 'medium';
+      applySize(current);
+
+      // 点击循环切换
+      btn.addEventListener('click', function () {
+        var idx = sizes.indexOf(current);
+        idx = (idx + 1) % sizes.length;
+        current = sizes[idx];
+        localStorage.setItem('fontSize', current);
+        applySize(current);
+      });
     })();
    </script>
   </body>
