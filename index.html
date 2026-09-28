@@ -1989,9 +1989,20 @@
               .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
           }
       
+          function highlight(text) {
+            var safe = esc(text);
+            if (!searchQuery) return safe;
+            var q = searchQuery.trim();
+            if (!q) return safe;
+
+            var pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var re = new RegExp('(' + pattern + ')', 'gi');
+            return safe.replace(re, '<span class="search-highlight">$1</span>');
+          }
+          
           function textToHtml(text) {
             return text.split(/\n+/).filter(function (l) { return l.trim(); })
-              .map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('');
+              .map(function (l) { return '<p>' + highlight(l) + '</p>'; }).join('');
           }
       
           function monthKey(dateStr) {
@@ -2051,11 +2062,7 @@
       
           // 渲染单张日志卡片
           function renderCard(item) {
-                      function highlight(text) {
-            var safe = esc(text);
-            if (!searchQuery) return safe;
-            var q = searchQuery.trim();
-            if (!q) return safe;
+            var tagsHtml = '';
 
             // 转义正则特殊字符
             var pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -2093,7 +2100,7 @@
                 '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
               '</div>' +
               collectionHtml +
-              '<div class="entry-body">' + highlight(item.body) + '</div>' +
+              '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
               imagesHtml +
               tagsHtml;
       
