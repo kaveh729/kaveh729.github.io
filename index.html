@@ -1395,6 +1395,38 @@
     [data-theme="dark"] .search-highlight {
       background: rgba(224, 184, 74, 0.35);
     }
+
+      .journal-back-top {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 0.85;
+      z-index: 10000;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .journal-back-top:hover {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+
+    [data-theme="dark"] .journal-back-top {
+      background: var(--accent);
+      color: #0b1f16;
+    }
   </style>
 </head>
 <body>
@@ -2000,7 +2032,10 @@
             <div id="journalList" class="journal-stream"></div>
           </div>
         </div>
+      </div>
     </div>
+
+    <button id="journalBackTop" class="journal-back-top" title="回到顶部">↑</button>
   </div>
 
        <script>
@@ -2572,7 +2607,15 @@
               renderEntries();
             });
           }
-          
+
+                    // 日志弹层回到顶部
+          var journalBackTopBtn = document.getElementById('journalBackTop');
+          if (journalBackTopBtn) {
+            journalBackTopBtn.addEventListener('click', function () {
+              overlay.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+          }
+
           document.getElementById('journalClose').addEventListener('click', function () {
             overlay.classList.remove('open');
             document.body.style.overflow = '';
