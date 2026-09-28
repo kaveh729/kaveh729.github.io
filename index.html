@@ -334,7 +334,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.88);
-      z-index: 9999;
+      z-index: 10100;
       align-items: center;
       justify-content: center;
       cursor: zoom-out;
@@ -1852,7 +1852,9 @@
     }
 
     .journal-overlay.focus-mode .write-form textarea,
-    .journal-overlay.focus-mode #editFormWrap textarea {
+    .journal-overlay.focus-mode .write-form .rich-editor,
+    .journal-overlay.focus-mode #editFormWrap textarea,
+    .journal-overlay.focus-mode #editFormWrap .rich-editor {
       min-height: 55vh;
       font-size: 17px;
       line-height: 1.9;
@@ -4698,17 +4700,22 @@
           document.documentElement.requestFullscreen().catch(function () {});
         }
 
-        // 焦点放在正文框
-        var textarea = overlay.querySelector('.write-form textarea:not([style*="display: none"])');
-        if (!textarea) {
-          textarea = overlay.querySelector('#editFormWrap textarea');
+               // 焦点放在正文框（支持富文本编辑器）
+        var editor = overlay.querySelector('.write-form .rich-editor');
+        if (!editor) {
+          editor = overlay.querySelector('#editFormWrap .rich-editor');
         }
-        if (textarea) {
+        if (!editor) {
+          editor = overlay.querySelector('.write-form textarea');
+        }
+        if (!editor) {
+          editor = overlay.querySelector('#editFormWrap textarea');
+        }
+        if (editor) {
           setTimeout(function () {
-            textarea.focus();
+            editor.focus();
           }, 100);
         }
-      }
 
       function exitFocus() {
         if (!overlay.classList.contains('focus-mode')) return;
