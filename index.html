@@ -3,13 +3,15 @@
 <head>
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 
-    <script>
+     <script>
     (function () {
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
       var fs = localStorage.getItem('fontSize') || 'medium';
       document.documentElement.setAttribute('data-font', fs);
+      var ff = localStorage.getItem('fontFamily') || 'system';
+      document.documentElement.setAttribute('data-font-family', ff);
     })();
   </script>
 
@@ -17,13 +19,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>尤黎猫 | 小宇宙</title>
   <style>
-    :root {
+        :root {
       --bg: #f0f7f2;
       --card: #ffffff;
       --text: #081c10;
       --muted: #2f4a38;
       --accent: #0f8a5f;
       --gold: #c9a227;
+      --font-scale: 1;
+      --font-main: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+
+    html[data-font-family="kai"] {
+      --font-main: "LXGW WenKai", "Kaiti SC", "STKaiti", "楷体", serif;
+    }
+
+    html[data-font-family="song"] {
+      --font-main: "Songti SC", "SimSun", "宋体", Georgia, serif;
+    }
+
+    html[data-font-family="mono"] {
+      --font-main: "SF Mono", "Consolas", "Courier New", monospace;
     }
 
     * {
@@ -32,7 +48,7 @@
 
         body {
           margin: 0;
-          font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+          font-family: var(--font-main);
           background-color: var(--bg);
           color: var(--text);
           line-height: 1.7;
@@ -1724,8 +1740,42 @@
     .write-form textarea {
       font-size: calc(1em * var(--font-scale));
     }
+
+        .font-family-toggle {
+      position: fixed;
+      top: 16px;
+      right: 184px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--accent);
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      font-family: var(--font-main);
+    }
+
+    .font-family-toggle:hover {
+      transform: scale(1.08);
+    }
+
+    [data-theme="dark"] .font-family-toggle {
+      background: rgba(18, 51, 38, 0.85);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
   </style>
-</head>
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
+ </head>
 <body>
   <div class="bg-fixed"></div>
   <div class="container">
@@ -3407,6 +3457,7 @@
   </script>
 
   <button id="authToggle" class="auth-toggle" title="登录 / 退出">🔑</button>
+  <button id="fontFamilyToggle" class="font-family-toggle" title="字体：系统">字</button>
   <button id="fontToggle" class="font-toggle" title="字体大小：中">A</button>
   <button id="themeToggle" class="theme-toggle" title="切换主题">🌙</button>
 
@@ -3907,5 +3958,48 @@
       });
     })();
    </script>
+
+    <script>
+    (function () {
+      var btn = document.getElementById('fontFamilyToggle');
+      if (!btn) return;
+
+      var root = document.documentElement;
+
+      // 循环顺序：系统 → 楷体 → 宋体 → 等宽 → 系统
+      var fonts = [
+        { key: 'system', label: '系统', hint: '字体：系统' },
+        { key: 'kai',    label: '楷',   hint: '字体：霞鹜文楷' },
+        { key: 'song',   label: '宋',   hint: '字体：宋体' },
+        { key: 'mono',   label: '码',   hint: '字体：等宽' }
+      ];
+
+      function applyFont(key) {
+        var found = fonts[0];
+        for (var i = 0; i < fonts.length; i++) {
+          if (fonts[i].key === key) { found = fonts[i]; break; }
+        }
+        root.setAttribute('data-font-family', found.key);
+        btn.textContent = found.label;
+        btn.title = found.hint;
+        return found.key;
+      }
+
+      var current = localStorage.getItem('fontFamily') || 'system';
+      if (!fonts.some(function (f) { return f.key === current; })) current = 'system';
+      applyFont(current);
+
+      btn.addEventListener('click', function () {
+        var idx = 0;
+        for (var i = 0; i < fonts.length; i++) {
+          if (fonts[i].key === current) { idx = i; break; }
+        }
+        idx = (idx + 1) % fonts.length;
+        current = fonts[idx].key;
+        localStorage.setItem('fontFamily', current);
+        applyFont(current);
+      });
+    })();
+  </script>
   </body>
 </html>
