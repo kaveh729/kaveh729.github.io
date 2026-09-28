@@ -754,6 +754,35 @@
       color: var(--accent);
     }
 
+    .entry-edit {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .entry-edit:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    .entry-actions {
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .entry-edit {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .entry-edit:hover {
+      background: rgba(52, 211, 153, 0.1);
+    }
+    
     .entry-delete {
       flex-shrink: 0;
       background: transparent;
@@ -2066,13 +2095,6 @@
           // 渲染单张日志卡片
           function renderCard(item) {
             var tagsHtml = '';
-
-            // 转义正则特殊字符
-            var pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            var re = new RegExp('(' + pattern + ')', 'gi');
-            return safe.replace(re, '<span class="search-highlight">$1</span>');
-          }
-            var tagsHtml = '';
             if (item.tags && item.tags.length) {
               tagsHtml = '<div class="entry-tags">' +
                 item.tags.map(function (t) {
@@ -2100,7 +2122,10 @@
                   '<div class="entry-date">' + esc(item.date) + '</div>' +
                   '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
-                '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
+                  '<div class="entry-actions">' +
+                  '<button class="entry-edit" data-id="' + item.id + '">编辑</button>' +
+                  '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
+                '</div>' +
               '</div>' +
               collectionHtml +
               '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
@@ -2112,6 +2137,10 @@
               sb.from('journal').delete().eq('id', item.id).then(function () {
                 loadEntries();
               });
+            });
+
+            card.querySelector('.entry-edit').addEventListener('click', function () {
+              openEditForm(item);
             });
       
             card.querySelectorAll('.entry-images img').forEach(function (img) {
@@ -2129,6 +2158,83 @@
             return card;
           }
       
+                    // 打开编辑表单
+          function openEditForm(item) {
+            var existing = document.getElementById('editFormWrap');
+            if (existing) existing.remove();
+
+            var form = document.createElement('div');
+            form.id = 'editFormWrap';
+            form.className = 'write-form';
+            form.style.marginBottom = '20px';
+            form.innerHTML =
+              '<p style="margin:0 0 6px;font-weight:600;">编辑日志</p>' +
+              '<input type="date" id="editDate" value="' + esc(item.date || '') + '">' +
+              '<input type="text" id="editTitle" value="' + esc(item.title || '') + '" placeholder="标题">' +
+              '<textarea id="editBody" placeholder="正文...">' + esc(item.body || '') + '</textarea>' +
+              '<input type="text" id="editCollection" list="collectionList" value="' + esc(item.collection || '') + '" placeholder="合集（可选）">' +
+              '<input type="text" id="editTags" value="' + esc((item.tags || []).join(', ')) + '" placeholder="标签，用逗号分隔">' +
+              '<p class="write-hint">图片不能在这里改，只能改文字内容。</p>' +
+              '<div class="write-actions">' +
+                '<button id="editSave" class="primary">保存</button>' +
+                '<button id="editCancel">取消</button>' +
+              '</div>';
+
+            var layoutEl = document.querySelector('.journal-layout');
+            if (layoutEl) {
+              layoutEl.parentNode.insertBefore(form, layoutEl);
+            } else {
+              listEl.insertBefore(form, listEl.firstChild);
+            }
+
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            document.getElementById('editCancel').addEventListener('click', function () {
+              form.remove();
+            });
+
+            document.getElementById('editSave').addEventListener('click', function () {
+              var date = document.getElementById('editDate').value;
+              var title = document.getElementById('editTitle').value.trim();
+              var body = document.getElementById('editBody').value.trim();
+              var collection = document.getElementById('editCollection').value.trim();
+              var tagsRaw = document.getElementById('editTags').value.trim();
+
+              if (!title || !body) { alert('标题和正文都要填。'); return; }
+
+              var tags = tagsRaw
+                ? tagsRaw.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean)
+                : [];
+
+              var saveBtn = document.getElementById('editSave');
+              saveBtn.disabled = true;
+              saveBtn.textContent = '保存中...';
+
+              sb.from('journal').update({
+                date: date,
+                title: title,
+                body: body,
+                collection: collection,
+                tags: tags
+              }).eq('id', item.id).then(function (res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '保存';
+
+                if (res.error) {
+                  alert('保存失败：' + res.error.message);
+                  return;
+                }
+
+                form.remove();
+                loadEntries();
+              }).catch(function (err) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '保存';
+                alert('保存失败：' + (err.message || err));
+              });
+            });
+          }
+
           // 渲染合集筛选
           function renderCollectionFilter() {
             var set = {};
