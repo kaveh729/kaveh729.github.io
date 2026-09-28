@@ -1911,107 +1911,6 @@
       background: rgba(15, 138, 95, 0.1);
     }
 
-        /* ========== 富文本编辑器 ========== */
-    .editor-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 6px 8px;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(15, 138, 95, 0.25);
-      border-radius: 10px;
-      margin-bottom: 6px;
-      align-items: center;
-    }
-
-    .editor-toolbar button {
-      min-width: 34px;
-      height: 32px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text);
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 8px;
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .editor-toolbar button:hover {
-      background: rgba(15, 138, 95, 0.1);
-      border-color: rgba(15, 138, 95, 0.3);
-    }
-
-    .editor-toolbar .tb-sep {
-      width: 1px;
-      height: 20px;
-      background: rgba(15, 138, 95, 0.2);
-      margin: 0 4px;
-    }
-
-    .editor-toolbar .color-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: inline-block;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-    }
-
-    .rich-editor {
-      min-height: 160px;
-      padding: 12px 14px;
-      border: 1px solid rgba(15, 138, 95, 0.25);
-      border-radius: 10px;
-      font: inherit;
-      font-size: 14px;
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--text);
-      outline: none;
-      line-height: 1.8;
-      overflow-y: auto;
-      max-height: 60vh;
-      word-wrap: break-word;
-    }
-
-    .rich-editor:empty::before {
-      content: attr(data-placeholder);
-      color: var(--muted);
-      pointer-events: none;
-    }
-
-    .rich-editor:focus {
-      border-color: var(--accent);
-    }
-
-    /* 日志正文里的格式化显示 */
-    .entry-body b,
-    .entry-body strong,
-    .reader-body b,
-    .reader-body strong {
-      font-weight: 700;
-    }
-
-    .entry-body i,
-    .entry-body em,
-    .reader-body i,
-    .reader-body em {
-      font-style: italic;
-    }
-
-    .entry-body u,
-    .reader-body u {
-      text-decoration: underline;
-    }
-
-    [data-theme="dark"] .editor-toolbar,
-    [data-theme="dark"] .rich-editor {
-      background: rgba(11, 31, 22, 0.8);
-      border-color: rgba(52, 211, 153, 0.25);
-    }
-
         .entry-read {
       flex-shrink: 0;
       background: transparent;
@@ -2184,6 +2083,106 @@
       .reader-body {
         font-size: calc(16px * var(--reader-scale, 1));
       }
+    }
+
+        /* ========== 富文本编辑器 ========== */
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+
+    .editor-toolbar button {
+      min-width: 34px;
+      height: 32px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .editor-toolbar button:hover {
+      background: rgba(15, 138, 95, 0.1);
+      border-color: rgba(15, 138, 95, 0.3);
+    }
+
+    .editor-toolbar .tb-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(15, 138, 95, 0.2);
+      margin: 0 4px;
+    }
+
+    .editor-toolbar .color-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .rich-editor {
+      min-height: 160px;
+      padding: 12px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+      line-height: 1.8;
+      overflow-y: auto;
+      max-height: 60vh;
+      word-wrap: break-word;
+    }
+
+    .rich-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .rich-editor:focus {
+      border-color: var(--accent);
+    }
+
+    .entry-body b,
+    .entry-body strong,
+    .reader-body b,
+    .reader-body strong {
+      font-weight: 700;
+    }
+
+    .entry-body i,
+    .entry-body em,
+    .reader-body i,
+    .reader-body em {
+      font-style: italic;
+    }
+
+    .entry-body u,
+    .reader-body u {
+      text-decoration: underline;
+    }
+
+    [data-theme="dark"] .editor-toolbar,
+    [data-theme="dark"] .rich-editor {
+      background: rgba(11, 31, 22, 0.8);
+      border-color: rgba(52, 211, 153, 0.25);
     }
   </style>
 
@@ -4716,6 +4715,7 @@
             editor.focus();
           }, 100);
         }
+      }
 
       function exitFocus() {
         if (!overlay.classList.contains('focus-mode')) return;
