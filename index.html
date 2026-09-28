@@ -1239,6 +1239,33 @@
           max-height: 3000px;
           opacity: 1;
         }
+
+      .sort-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .sort-btn {
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--accent);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sort-btn:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    [data-theme="dark"] .sort-btn {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--accent);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -1819,6 +1846,10 @@
 
           <div id="collectionFilter" class="collection-filter"></div>
 
+           <div class="sort-row">
+              <button id="sortToggle" class="sort-btn" data-order="desc">↓ 最新优先</button>
+            </div>
+          
           <div class="journal-layout">
             <aside id="journalTimeline" class="journal-timeline"></aside>
             <div id="journalList" class="journal-stream"></div>
@@ -1870,6 +1901,7 @@
           // 状态
           var allEntries = [];
           var currentCollection = '__all__';
+          var sortOrder = 'desc';   // 'desc' = 最新优先，'asc' = 最早优先
       
           var today = new Date();
           var yyyy = today.getFullYear();
@@ -2074,7 +2106,18 @@
               groups[key].push(item);
             });
       
-            var keys = Object.keys(groups).sort().reverse();
+                        var keys = Object.keys(groups).sort();
+            if (sortOrder === 'desc') keys.reverse();
+
+            // 每个月内部的日志也按时间排
+            keys.forEach(function (k) {
+              groups[k].sort(function (a, b) {
+                var da = a.date || '';
+                var db = b.date || '';
+                if (sortOrder === 'desc') return db.localeCompare(da);
+                return da.localeCompare(db);
+              });
+            });
       
             keys.forEach(function (key) {
               var items = groups[key];
@@ -2204,6 +2247,23 @@
             });
           });
       
+                    // 排序切换
+          var sortToggleBtn = document.getElementById('sortToggle');
+          if (sortToggleBtn) {
+            sortToggleBtn.addEventListener('click', function () {
+              if (sortOrder === 'desc') {
+                sortOrder = 'asc';
+                sortToggleBtn.textContent = '↑ 最早优先';
+                sortToggleBtn.dataset.order = 'asc';
+              } else {
+                sortOrder = 'desc';
+                sortToggleBtn.textContent = '↓ 最新优先';
+                sortToggleBtn.dataset.order = 'desc';
+              }
+              renderEntries();
+            });
+          }
+          
           document.getElementById('journalClose').addEventListener('click', function () {
             overlay.classList.remove('open');
             document.body.style.overflow = '';
