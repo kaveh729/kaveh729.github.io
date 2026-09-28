@@ -2273,12 +2273,89 @@
     [data-theme="dark"] .reader-nav-btn:hover:not(:disabled) {
       background: rgba(52, 211, 153, 0.1);
     }
+
+        /* ========== 片头动画 ========== */
+    .intro {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+
+    .intro.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .intro-inner {
+      text-align: center;
+      animation: introIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .intro-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: inline-block;
+      animation: avatarFloat 2.4s ease-in-out infinite;
+      box-shadow: 0 0 0 0 rgba(15, 138, 95, 0.5);
+    }
+
+    .intro-title {
+      margin-top: 20px;
+      font-size: 22px;
+      letter-spacing: 6px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .intro-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--muted);
+    }
+
+    @keyframes introIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes avatarFloat {
+      0% {
+        transform: translateY(0);
+        box-shadow: 0 0 0 0 rgba(15, 138, 95, 0.45);
+      }
+      50% {
+        transform: translateY(-10px);
+        box-shadow: 0 0 0 14px rgba(15, 138, 95, 0);
+      }
+      100% {
+        transform: translateY(0);
+        box-shadow: 0 0 0 0 rgba(15, 138, 95, 0);
+      }
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css">
  </head>
 <body>
+    <div id="intro" class="intro">
+    <div class="intro-inner">
+      <img class="intro-avatar"
+           src="362548f4c208cbb17188044ebbba60e7_3360623059818334571.png"
+           alt="头像">
+      <div class="intro-title">尤黎猫</div>
+      <div class="intro-sub">小宇宙</div>
+    </div>
+  </div>
+  
   <div class="bg-fixed"></div>
   <div class="container">
     <header>
@@ -5097,6 +5174,18 @@
         readerScale = Math.min(2, readerScale + 0.1);
         applyScale();
       });
+    })();
+  </script>
+
+    <script>
+    (function () {
+      var intro = document.getElementById('intro');
+      if (!intro) return;
+
+      // 页面加载 1.8 秒后淡出
+      setTimeout(function () {
+        intro.classList.add('hide');
+      }, 1800);
     })();
   </script>
   </body>
