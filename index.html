@@ -1908,6 +1908,281 @@
     .focus-toggle-btn:hover {
       background: rgba(15, 138, 95, 0.1);
     }
+
+        /* ========== 富文本编辑器 ========== */
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+
+    .editor-toolbar button {
+      min-width: 34px;
+      height: 32px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .editor-toolbar button:hover {
+      background: rgba(15, 138, 95, 0.1);
+      border-color: rgba(15, 138, 95, 0.3);
+    }
+
+    .editor-toolbar .tb-sep {
+      width: 1px;
+      height: 20px;
+      background: rgba(15, 138, 95, 0.2);
+      margin: 0 4px;
+    }
+
+    .editor-toolbar .color-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .rich-editor {
+      min-height: 160px;
+      padding: 12px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+      line-height: 1.8;
+      overflow-y: auto;
+      max-height: 60vh;
+      word-wrap: break-word;
+    }
+
+    .rich-editor:empty::before {
+      content: attr(data-placeholder);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .rich-editor:focus {
+      border-color: var(--accent);
+    }
+
+    /* 日志正文里的格式化显示 */
+    .entry-body b,
+    .entry-body strong,
+    .reader-body b,
+    .reader-body strong {
+      font-weight: 700;
+    }
+
+    .entry-body i,
+    .entry-body em,
+    .reader-body i,
+    .reader-body em {
+      font-style: italic;
+    }
+
+    .entry-body u,
+    .reader-body u {
+      text-decoration: underline;
+    }
+
+    [data-theme="dark"] .editor-toolbar,
+    [data-theme="dark"] .rich-editor {
+      background: rgba(11, 31, 22, 0.8);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+        .entry-read {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .entry-read:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    [data-theme="dark"] .entry-read {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .entry-read:hover {
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    /* ========== 阅读模式 ========== */
+    .reader-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10050;
+      overflow-y: auto;
+    }
+
+    .reader-overlay.open {
+      display: block;
+    }
+
+    .reader-bar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(15, 138, 95, 0.15);
+      z-index: 1;
+    }
+
+    [data-theme="dark"] .reader-bar {
+      background: rgba(18, 51, 38, 0.9);
+      border-color: rgba(52, 211, 153, 0.2);
+    }
+
+    .reader-back {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .reader-back:hover {
+      opacity: 0.9;
+    }
+
+    .reader-font-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .reader-font-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--accent);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease;
+    }
+
+    .reader-font-btn:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    [data-theme="dark"] .reader-font-btn {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .reader-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+    }
+
+    .reader-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .reader-title {
+      font-size: calc(28px * var(--reader-scale, 1));
+      font-weight: 700;
+      margin: 0 0 28px;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .reader-body {
+      font-size: calc(18px * var(--reader-scale, 1));
+      line-height: 2;
+      color: var(--text);
+    }
+
+    .reader-body p {
+      margin: 0 0 1.4em;
+      text-indent: 2em;
+    }
+
+    .reader-body p.empty-line {
+      min-height: 1em;
+      margin: 0 0 1.2em;
+      text-indent: 0;
+    }
+
+    .reader-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 28px 0;
+    }
+
+    .reader-images img {
+      width: 100%;
+      border-radius: 10px;
+      cursor: zoom-out;
+    }
+
+    .reader-tags {
+      margin-top: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    @media (max-width: 520px) {
+      .reader-content {
+        padding: 40px 20px 100px;
+      }
+
+      .reader-title {
+        font-size: calc(22px * var(--reader-scale, 1));
+      }
+
+      .reader-body {
+        font-size: calc(16px * var(--reader-scale, 1));
+      }
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -2117,6 +2392,17 @@
 
   <a href="#" class="back-to-top" title="返回顶部">↑</a>
 
+    <div class="reader-overlay" id="readerOverlay">
+    <div class="reader-bar">
+      <button id="readerBack" class="reader-back">← 返回</button>
+      <div class="reader-font-controls">
+        <button id="readerFontMinus" class="reader-font-btn" title="缩小字体">A−</button>
+        <button id="readerFontPlus" class="reader-font-btn" title="放大字体">A+</button>
+      </div>
+    </div>
+    <div class="reader-content" id="readerContent"></div>
+  </div>
+  
   <div class="lightbox" id="lightbox">
     <span class="lightbox-close">&times;</span>
     <img id="lightboxImg" src="" alt="">
@@ -2681,7 +2967,22 @@
           <div id="writeForm" class="write-form" style="display:none;">
             <input type="date" id="entryDate">
             <input type="text" id="entryTitle" placeholder="标题">
-            <textarea id="entryBody" placeholder="正文..."></textarea>
+                        <div class="editor-toolbar" id="entryToolbar">
+              <button type="button" data-cmd="bold" title="加粗"><b>B</b></button>
+              <button type="button" data-cmd="italic" title="斜体"><i>I</i></button>
+              <button type="button" data-cmd="underline" title="下划线"><u>U</u></button>
+              <span class="tb-sep"></span>
+              <button type="button" data-cmd="hiliteColor" data-value="#fff59d" title="黄色高光"><span class="color-dot" style="background:#fff59d"></span></button>
+              <button type="button" data-cmd="hiliteColor" data-value="#a5d6a7" title="绿色高光"><span class="color-dot" style="background:#a5d6a7"></span></button>
+              <button type="button" data-cmd="hiliteColor" data-value="#90caf9" title="蓝色高光"><span class="color-dot" style="background:#90caf9"></span></button>
+              <span class="tb-sep"></span>
+              <button type="button" data-cmd="foreColor" data-value="#e53935" title="红字" style="color:#e53935;font-weight:700">A</button>
+              <button type="button" data-cmd="foreColor" data-value="#1e88e5" title="蓝字" style="color:#1e88e5;font-weight:700">A</button>
+              <button type="button" data-cmd="foreColor" data-value="#43a047" title="绿字" style="color:#43a047;font-weight:700">A</button>
+              <span class="tb-sep"></span>
+              <button type="button" data-cmd="removeFormat" title="清除格式">✕</button>
+            </div>
+            <div id="entryBody" class="rich-editor" contenteditable="true" data-placeholder="正文..."></div>
             <input type="text" id="entryCollection" list="collectionList" placeholder="合集（可选，如：读书笔记、旅行）">
             <datalist id="collectionList"></datalist>
             <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
@@ -2808,8 +3109,48 @@
             return cnCount + enCount;
           }
 
-          function textToHtml(text) {
+                    // 判断一段文本是不是 HTML
+          function isHtml(str) {
+            if (!str) return false;
+            return /<[a-z][\s\S]*>/i.test(str);
+          }
+
+          // 简单清理 HTML，防止意外脚本
+          function sanitizeHtml(html) {
+            var tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            tmp.querySelectorAll('script, style, iframe, object, embed, link').forEach(function (el) {
+              el.remove();
+            });
+            tmp.querySelectorAll('*').forEach(function (el) {
+              var attrs = Array.from(el.attributes);
+              attrs.forEach(function (attr) {
+                if (attr.name.toLowerCase().indexOf('on') === 0) {
+                  el.removeAttribute(attr.name);
+                }
+              });
+            });
+            return tmp.innerHTML;
+          }
+
+          // 把纯文本转成适合 contenteditable 的 HTML
+          function textToEditorHtml(text) {
             if (!text) return '';
+            return text.split('\n').map(function (line) {
+              if (!line.trim()) return '<div><br></div>';
+              return '<div>' + esc(line) + '</div>';
+            }).join('');
+          }
+
+                    function textToHtml(text) {
+            if (!text) return '';
+
+            // 如果已经是 HTML，直接用
+            if (isHtml(text)) {
+              return sanitizeHtml(text);
+            }
+
+            // 纯文本：按换行拆段
             var lines = text.split('\n');
             return lines.map(function (line) {
               if (!line.trim()) return '<p class="empty-line">&nbsp;</p>';
@@ -2928,6 +3269,7 @@
                   '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
                   '<div class="entry-actions">' +
+                  '<button class="entry-read" data-id="' + item.id + '">阅读</button>' +
                   '<button class="entry-edit" data-id="' + item.id + '">编辑</button>' +
                   '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
                 '</div>' +
@@ -2976,7 +3318,22 @@
               '<p style="margin:0 0 6px;font-weight:600;">编辑日志</p>' +
               '<input type="date" id="editDate" value="' + esc(item.date || '') + '">' +
               '<input type="text" id="editTitle" value="' + esc(item.title || '') + '" placeholder="标题">' +
-              '<textarea id="editBody" placeholder="正文...">' + esc(item.body || '') + '</textarea>' +
+                            '<div class="editor-toolbar" id="editToolbar">' +
+                '<button type="button" data-cmd="bold" title="加粗"><b>B</b></button>' +
+                '<button type="button" data-cmd="italic" title="斜体"><i>I</i></button>' +
+                '<button type="button" data-cmd="underline" title="下划线"><u>U</u></button>' +
+                '<span class="tb-sep"></span>' +
+                '<button type="button" data-cmd="hiliteColor" data-value="#fff59d" title="黄色高光"><span class="color-dot" style="background:#fff59d"></span></button>' +
+                '<button type="button" data-cmd="hiliteColor" data-value="#a5d6a7" title="绿色高光"><span class="color-dot" style="background:#a5d6a7"></span></button>' +
+                '<button type="button" data-cmd="hiliteColor" data-value="#90caf9" title="蓝色高光"><span class="color-dot" style="background:#90caf9"></span></button>' +
+                '<span class="tb-sep"></span>' +
+                '<button type="button" data-cmd="foreColor" data-value="#e53935" title="红字" style="color:#e53935;font-weight:700">A</button>' +
+                '<button type="button" data-cmd="foreColor" data-value="#1e88e5" title="蓝字" style="color:#1e88e5;font-weight:700">A</button>' +
+                '<button type="button" data-cmd="foreColor" data-value="#43a047" title="绿字" style="color:#43a047;font-weight:700">A</button>' +
+                '<span class="tb-sep"></span>' +
+                '<button type="button" data-cmd="removeFormat" title="清除格式">✕</button>' +
+              '</div>' +
+              '<div id="editBody" class="rich-editor" contenteditable="true" data-placeholder="正文..."></div>' +
               '<input type="text" id="editCollection" list="collectionList" value="' + esc(item.collection || '') + '" placeholder="合集（可选）">' +
               '<input type="text" id="editTags" value="' + esc((item.tags || []).join(', ')) + '" placeholder="标签，用逗号分隔">' +
               '<p class="write-hint">图片不能在这里改，只能改文字内容。</p>' +
@@ -2992,6 +3349,17 @@
               listEl.insertBefore(form, listEl.firstChild);
             }
 
+                        // 填充编辑器内容
+            var editBodyEl = form.querySelector('#editBody');
+            if (editBodyEl) {
+              if (isHtml(item.body)) {
+                editBodyEl.innerHTML = sanitizeHtml(item.body);
+              } else {
+                editBodyEl.innerHTML = textToEditorHtml(item.body || '');
+              }
+              initToolbar(form.querySelector('#editToolbar'), editBodyEl);
+            }
+
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             document.getElementById('editCancel').addEventListener('click', function () {
@@ -3001,7 +3369,7 @@
             document.getElementById('editSave').addEventListener('click', function () {
               var date = document.getElementById('editDate').value;
               var title = document.getElementById('editTitle').value.trim();
-              var body = document.getElementById('editBody').value.trim();
+              var body = document.getElementById('editBody').innerHTML.trim();
               var collection = document.getElementById('editCollection').value.trim();
               var tagsRaw = document.getElementById('editTags').value.trim();
 
@@ -3230,6 +3598,15 @@
                 renderEntries();
               });
           }
+
+                    // 暴露给阅读模式使用
+          window.__journalGetEntry = function (id) {
+            if (!id) return null;
+            for (var i = 0; i < allEntries.length; i++) {
+              if (String(allEntries[i].id) === String(id)) return allEntries[i];
+            }
+            return null;
+          };
       
           // 登录状态切换
           function showLoggedIn(isLoggedIn) {
@@ -3353,7 +3730,7 @@
           document.getElementById('cancelWrite').addEventListener('click', function () {
             formEl.style.display = 'none';
             toggleBtn.textContent = '✍️ 写新日志';
-            titleInput.value = ''; bodyInput.value = ''; tagsInput.value = '';
+            titleInput.value = ''; bodyInput.innerHTML = ''; tagsInput.value = '';
             if (collectionInput) collectionInput.value = '';
             if (imagesInput) imagesInput.value = '';
             pendingImages = [];
@@ -3387,11 +3764,33 @@
             });
           }
       
+                    // 工具栏初始化
+          function initToolbar(toolbar, editor) {
+            if (!toolbar || !editor) return;
+            toolbar.querySelectorAll('button[data-cmd]').forEach(function (btn) {
+              btn.addEventListener('mousedown', function (e) {
+                // 防止按钮抢走编辑器焦点
+                e.preventDefault();
+              });
+              btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var cmd = btn.dataset.cmd;
+                var val = btn.dataset.value || null;
+                editor.focus();
+                try {
+                  document.execCommand(cmd, false, val);
+                } catch (err) {}
+              });
+            });
+          }
+
+          initToolbar(document.getElementById('entryToolbar'), bodyInput);
+
           // 保存日志
           document.getElementById('saveEntry').addEventListener('click', function () {
             var date = dateInput.value || (yyyy + '-' + mm + '-' + dd);
             var title = titleInput.value.trim();
-            var body = bodyInput.value.trim();
+            var body = bodyInput.innerHTML.trim();
             var collection = collectionInput ? collectionInput.value.trim() : '';
             var tagsRaw = tagsInput.value.trim();
       
@@ -3428,7 +3827,7 @@
               }
       
               titleInput.value = '';
-              bodyInput.value = '';
+              bodyInput.innerHTML = '';
               tagsInput.value = '';
               if (collectionInput) collectionInput.value = '';
               if (imagesInput) imagesInput.value = '';
@@ -4353,5 +4752,173 @@
       }
     })();
    </script>
+
+    <script>
+    (function () {
+      var overlay = document.getElementById('readerOverlay');
+      var content = document.getElementById('readerContent');
+      var backBtn = document.getElementById('readerBack');
+      var fontMinus = document.getElementById('readerFontMinus');
+      var fontPlus = document.getElementById('readerFontPlus');
+
+      if (!overlay || !content) return;
+
+      var readerScale = parseFloat(localStorage.getItem('reader_scale')) || 1;
+      document.documentElement.style.setProperty('--reader-scale', readerScale);
+
+      function applyScale() {
+        document.documentElement.style.setProperty('--reader-scale', readerScale);
+        localStorage.setItem('reader_scale', readerScale);
+      }
+
+      // 简单转义
+      function esc(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+            function isHtml(str) {
+        if (!str) return false;
+        return /<[a-z][\s\S]*>/i.test(str);
+      }
+
+      function sanitizeHtml(html) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        tmp.querySelectorAll('script, style, iframe, object, embed, link').forEach(function (el) {
+          el.remove();
+        });
+        tmp.querySelectorAll('*').forEach(function (el) {
+          var attrs = Array.from(el.attributes);
+          attrs.forEach(function (attr) {
+            if (attr.name.toLowerCase().indexOf('on') === 0) {
+              el.removeAttribute(attr.name);
+            }
+          });
+        });
+        return tmp.innerHTML;
+      }
+
+      function bodyToHtml(text) {
+        if (!text) return '';
+        if (isHtml(text)) {
+          return sanitizeHtml(text);
+        }
+        return text.split('\n').map(function (line) {
+          if (!line.trim()) return '<p class="empty-line">&nbsp;</p>';
+          return '<p>' + esc(line) + '</p>';
+        }).join('');
+      }
+
+      function formatDateTime(value) {
+        if (!value) return '';
+        var d = new Date(value);
+        if (isNaN(d.getTime())) return String(value);
+        var y = d.getFullYear();
+        var mo = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        return y + '-' + mo + '-' + day + ' ' + hh + ':' + mm;
+      }
+
+      function countWords(text) {
+        if (!text) return 0;
+        var s = String(text).trim();
+        if (!s) return 0;
+        s = s.replace(/\s+/g, ' ');
+        var cn = s.match(/[\u4e00-\u9fa5\u3040-\u30ff\uff00-\uffef]/g);
+        var cnCount = cn ? cn.length : 0;
+        var en = s.replace(/[\u4e00-\u9fa5\u3040-\u30ff\uff00-\uffef]/g, ' ');
+        var enArr = en.match(/[a-zA-Z0-9]+/g);
+        var enCount = enArr ? enArr.length : 0;
+        return cnCount + enCount;
+      }
+
+      function openReader(item) {
+        var tagsHtml = '';
+        if (item.tags && item.tags.length) {
+          tagsHtml = '<div class="reader-tags">' +
+            item.tags.map(function (t) {
+              return '<span class="tag">' + esc(t) + '</span>';
+            }).join('') + '</div>';
+        }
+
+        var imagesHtml = '';
+        if (item.images && item.images.length) {
+          imagesHtml = '<div class="reader-images">' +
+            item.images.map(function (url) {
+              return '<img src="' + esc(url) + '" alt="日志图片" loading="lazy">';
+            }).join('') + '</div>';
+        }
+
+        var collectionHtml = item.collection
+          ? '<span class="entry-collection">📁 ' + esc(item.collection) + '</span>'
+          : '';
+
+        content.innerHTML =
+          '<div class="reader-meta">' +
+            '<span>' + esc(formatDateTime(item.created_at || item.date)) + '</span>' +
+            '<span>' + countWords(item.body) + ' 字</span>' +
+            collectionHtml +
+          '</div>' +
+          '<h1 class="reader-title">' + esc(item.title) + '</h1>' +
+          '<div class="reader-body">' + bodyToHtml(item.body) + '</div>' +
+          imagesHtml +
+          tagsHtml;
+
+        overlay.classList.add('open');
+        overlay.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+
+        // 点图片用 lightbox 放大
+        content.querySelectorAll('.reader-images img').forEach(function (img) {
+          img.addEventListener('click', function () {
+            var lb = document.getElementById('lightbox');
+            var lbImg = document.getElementById('lightboxImg');
+            if (lb && lbImg) {
+              lbImg.src = img.src;
+              lb.classList.add('active');
+            }
+          });
+        });
+      }
+
+      function closeReader() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      // 代理点击：任何 .entry-read 按钮
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.entry-read');
+        if (!btn) return;
+
+        // 找到对应日志
+        if (typeof window.__journalGetEntry === 'function') {
+          var item = window.__journalGetEntry(btn.dataset.id);
+          if (item) openReader(item);
+        }
+      });
+
+      backBtn.addEventListener('click', closeReader);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) {
+          closeReader();
+        }
+      });
+
+      fontMinus.addEventListener('click', function () {
+        readerScale = Math.max(0.75, readerScale - 0.1);
+        applyScale();
+      });
+
+      fontPlus.addEventListener('click', function () {
+        readerScale = Math.min(2, readerScale + 0.1);
+        applyScale();
+      });
+    })();
+  </script>
   </body>
 </html>
