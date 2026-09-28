@@ -3862,9 +3862,15 @@
               return;
             }
       
-                        // 置顶的单独放一组
-            var pinnedItems = filtered.filter(function (item) { return item.pinned; });
-            var normalItems = filtered.filter(function (item) { return !item.pinned; });
+                                    // 只有切换到具体合集时，才显示置顶组
+            // "全部"视图下不显示置顶，所有日志按时间线正常排列
+            var pinnedItems = [];
+            var normalItems = filtered;
+
+            if (currentCollection !== '__all__') {
+              pinnedItems = filtered.filter(function (item) { return item.pinned; });
+              normalItems = filtered.filter(function (item) { return !item.pinned; });
+            }
 
             // 按月份分组（只对非置顶的）
             var groups = {};
