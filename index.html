@@ -2231,6 +2231,48 @@
       font-size: 13px;
       font-weight: 600;
     }
+
+        /* ========== 阅读模式：上下篇导航 ========== */
+    .reader-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(15, 138, 95, 0.15);
+    }
+
+    .reader-nav-btn {
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s ease, opacity 0.15s ease;
+      max-width: 45%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reader-nav-btn:hover:not(:disabled) {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    .reader-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    [data-theme="dark"] .reader-nav-btn {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .reader-nav-btn:hover:not(:disabled) {
+      background: rgba(52, 211, 153, 0.1);
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -3662,6 +3704,11 @@
               });
           }
 
+                    // 暴露全部日志给阅读模式
+          window.__journalGetAll = function () {
+            return allEntries.slice();
+          };
+
                     // 暴露给阅读模式使用
           window.__journalGetEntry = function (id) {
             if (!id) return null;
@@ -4951,12 +4998,57 @@
           '<h1 class="reader-title">' + esc(item.title) + '</h1>' +
           '<div class="reader-body">' + bodyToHtml(item.body) + '</div>' +
           imagesHtml +
-          tagsHtml;
+          tagsHtml +
+          '<div class="reader-nav">' +
+            '<button id="readerPrev" class="reader-nav-btn">← 上一篇</button>' +
+            '<button id="readerNext" class="reader-nav-btn">下一篇 →</button>' +
+          '</div>';
 
         overlay.classList.add('open');
         overlay.scrollTop = 0;
         document.body.style.overflow = 'hidden';
         document.body.classList.add('reader-active');
+
+                // 上下篇导航
+        (function () {
+          var all = window.__journalGetAll ? window.__journalGetAll() : [];
+          if (!all.length) return;
+
+          var idx = -1;
+          for (var i = 0; i < all.length; i++) {
+            if (String(all[i].id) === String(item.id)) { idx = i; break; }
+          }
+          if (idx === -1) return;
+
+          var prevBtn = document.getElementById('readerPrev');
+          var nextBtn = document.getElementById('readerNext');
+
+          // allEntries 按日期降序（最新在前）
+          // 上一篇 = 更早的，在数组里更靠后 → idx + 1
+          // 下一篇 = 更新的，在数组里更靠前 → idx - 1
+          var olderItem = all[idx + 1];
+          var newerItem = all[idx - 1];
+
+          if (prevBtn) {
+            if (olderItem) {
+              prevBtn.addEventListener('click', function () {
+                openReader(olderItem);
+              });
+            } else {
+              prevBtn.disabled = true;
+            }
+          }
+
+          if (nextBtn) {
+            if (newerItem) {
+              nextBtn.addEventListener('click', function () {
+                openReader(newerItem);
+              });
+            } else {
+              nextBtn.disabled = true;
+            }
+          }
+        })();
 
         // 点图片用 lightbox 放大
         content.querySelectorAll('.reader-images img').forEach(function (img) {
