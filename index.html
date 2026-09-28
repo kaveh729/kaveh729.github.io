@@ -1266,6 +1266,73 @@
       color: var(--accent);
       border-color: rgba(52, 211, 153, 0.3);
     }
+
+      .search-row {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px 40px 10px 14px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    #searchInput:focus {
+      border-color: var(--accent);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .search-clear:hover {
+      background: rgba(15, 138, 95, 0.1);
+      color: var(--accent);
+    }
+
+    .search-clear.show {
+      display: flex;
+    }
+
+    .search-highlight {
+      background: rgba(201, 162, 39, 0.35);
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    [data-theme="dark"] #searchInput {
+      background: rgba(11, 31, 22, 0.8);
+      color: var(--text);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    [data-theme="dark"] .search-highlight {
+      background: rgba(224, 184, 74, 0.35);
+    }
   </style>
 </head>
 <body>
@@ -1846,6 +1913,11 @@
 
           <div id="collectionFilter" class="collection-filter"></div>
 
+          <div class="search-row">
+              <input type="text" id="searchInput" placeholder="搜索标题、正文、合集、标签...">
+              <button id="searchClear" class="search-clear" title="清空">×</button>
+            </div>
+
            <div class="sort-row">
               <button id="sortToggle" class="sort-btn" data-order="desc">↓ 最新优先</button>
             </div>
@@ -1902,6 +1974,7 @@
           var allEntries = [];
           var currentCollection = '__all__';
           var sortOrder = 'desc';   // 'desc' = 最新优先，'asc' = 最早优先
+          var searchQuery = '';
       
           var today = new Date();
           var yyyy = today.getFullYear();
@@ -1978,6 +2051,17 @@
       
           // 渲染单张日志卡片
           function renderCard(item) {
+                      function highlight(text) {
+            var safe = esc(text);
+            if (!searchQuery) return safe;
+            var q = searchQuery.trim();
+            if (!q) return safe;
+
+            // 转义正则特殊字符
+            var pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var re = new RegExp('(' + pattern + ')', 'gi');
+            return safe.replace(re, '<span class="search-highlight">$1</span>');
+          }
             var tagsHtml = '';
             if (item.tags && item.tags.length) {
               tagsHtml = '<div class="entry-tags">' +
@@ -2000,16 +2084,16 @@
       
             var card = document.createElement('article');
             card.className = 'card visible';
-            card.innerHTML =
+           card.innerHTML =
               '<div class="entry-head">' +
                 '<div>' +
                   '<div class="entry-date">' + esc(item.date) + '</div>' +
-                  '<h2 class="entry-title">' + esc(item.title) + '</h2>' +
+                  '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
                 '<button class="entry-delete" data-id="' + item.id + '">删除</button>' +
               '</div>' +
               collectionHtml +
-              '<div class="entry-body">' + textToHtml(item.body) + '</div>' +
+              '<div class="entry-body">' + highlight(item.body) + '</div>' +
               imagesHtml +
               tagsHtml;
       
@@ -2080,9 +2164,27 @@
           var timelineObserver = null;
       
           function renderEntries() {
+                        var q = searchQuery.trim().toLowerCase();
+
             var filtered = allEntries.filter(function (item) {
-              if (currentCollection === '__all__') return true;
-              return item.collection === currentCollection;
+              // 合集筛选
+              if (currentCollection !== '__all__' && item.collection !== currentCollection) {
+                return false;
+              }
+
+              // 搜索筛选
+              if (q) {
+                var haystack = [
+                  item.title || '',
+                  item.body || '',
+                  item.collection || '',
+                  (item.tags || []).join(' ')
+                ].join(' ').toLowerCase();
+
+                if (haystack.indexOf(q) === -1) return false;
+              }
+
+              return true;
             });
       
             listEl.innerHTML = '';
@@ -2246,7 +2348,35 @@
               document.body.style.overflow = 'hidden';
             });
           });
-      
+
+                    // 搜索
+          var searchInput = document.getElementById('searchInput');
+          var searchClear = document.getElementById('searchClear');
+
+          if (searchInput) {
+            searchInput.addEventListener('input', function () {
+              searchQuery = searchInput.value;
+
+              if (searchQuery) {
+                searchClear.classList.add('show');
+              } else {
+                searchClear.classList.remove('show');
+              }
+
+              renderEntries();
+            });
+          }
+
+          if (searchClear) {
+            searchClear.addEventListener('click', function () {
+              searchInput.value = '';
+              searchQuery = '';
+              searchClear.classList.remove('show');
+              searchInput.focus();
+              renderEntries();
+            });
+          }
+
                     // 排序切换
           var sortToggleBtn = document.getElementById('sortToggle');
           if (sortToggleBtn) {
