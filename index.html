@@ -1827,6 +1827,87 @@
       color: var(--accent);
       font-size: 15px;
     }
+
+        /* ========== 专注模式 ========== */
+    .journal-overlay.focus-mode .journal-overlay-content {
+      padding: 0;
+    }
+
+    .journal-overlay.focus-mode #journalMain > *:not(.write-form):not(#editFormWrap):not(.focus-exit-btn) {
+      display: none !important;
+    }
+
+    .journal-overlay.focus-mode #journalMain {
+      display: block !important;
+    }
+
+    .journal-overlay.focus-mode .write-form,
+    .journal-overlay.focus-mode #editFormWrap {
+      max-width: 720px;
+      margin: 80px auto 40px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .journal-overlay.focus-mode .write-form textarea,
+    .journal-overlay.focus-mode #editFormWrap textarea {
+      min-height: 55vh;
+      font-size: 17px;
+      line-height: 1.9;
+    }
+
+    .journal-overlay.focus-mode .write-form input,
+    .journal-overlay.focus-mode #editFormWrap input {
+      font-size: 15px;
+    }
+
+    [data-theme="dark"] .journal-overlay.focus-mode .write-form,
+    [data-theme="dark"] .journal-overlay.focus-mode #editFormWrap {
+      background: rgba(18, 51, 38, 0.9);
+    }
+
+    .focus-exit-btn {
+      position: fixed;
+      top: 80px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 10001;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.15s ease;
+    }
+
+    .focus-exit-btn:hover {
+      transform: scale(1.05);
+    }
+
+    [data-theme="dark"] .focus-exit-btn {
+      background: rgba(18, 51, 38, 0.9);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .focus-toggle-btn {
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      margin-left: 8px;
+      transition: background 0.15s ease;
+    }
+
+    .focus-toggle-btn:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -2606,9 +2687,10 @@
             <input type="text" id="entryTags" placeholder="标签，用逗号分隔（可选）">
             <input type="file" id="entryImages" accept="image/*" multiple>
             <p class="write-hint" id="imageHint">可上传多张图片，会自动压缩。</p>
-            <div class="write-actions">
+          <div class="write-actions">
               <button id="saveEntry" class="primary">保存</button>
               <button id="cancelWrite">取消</button>
+              <button id="focusToggleBtn" class="focus-toggle-btn" type="button">🎯 专注模式</button>
             </div>
           </div>
 
@@ -4183,6 +4265,92 @@
       });
 
       loadStatus();
+    })();
+   </script>
+
+    <script>
+    (function () {
+      var overlay = document.getElementById('journalOverlay');
+      if (!overlay) return;
+
+      var focusBtn = document.getElementById('focusToggleBtn');
+      var exitBtn = null;
+
+      function enterFocus() {
+        if (overlay.classList.contains('focus-mode')) return;
+        overlay.classList.add('focus-mode');
+
+        if (focusBtn) {
+          focusBtn.textContent = '退出专注';
+        }
+
+        // 创建退出按钮
+        if (!exitBtn) {
+          exitBtn = document.createElement('button');
+          exitBtn.className = 'focus-exit-btn';
+          exitBtn.textContent = '← 退出专注';
+          exitBtn.addEventListener('click', exitFocus);
+          document.body.appendChild(exitBtn);
+        }
+        exitBtn.style.display = 'block';
+
+        // 尝试全屏
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(function () {});
+        }
+
+        // 焦点放在正文框
+        var textarea = overlay.querySelector('.write-form textarea:not([style*="display: none"])');
+        if (!textarea) {
+          textarea = overlay.querySelector('#editFormWrap textarea');
+        }
+        if (textarea) {
+          setTimeout(function () {
+            textarea.focus();
+          }, 100);
+        }
+      }
+
+      function exitFocus() {
+        if (!overlay.classList.contains('focus-mode')) return;
+        overlay.classList.remove('focus-mode');
+
+        if (focusBtn) {
+          focusBtn.textContent = '🎯 专注模式';
+        }
+
+        if (exitBtn) {
+          exitBtn.style.display = 'none';
+        }
+
+        // 退出全屏
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(function () {});
+        }
+      }
+
+      if (focusBtn) {
+        focusBtn.addEventListener('click', function () {
+          if (overlay.classList.contains('focus-mode')) {
+            exitFocus();
+          } else {
+            enterFocus();
+          }
+        });
+      }
+
+      // 按 Esc 退出专注
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('focus-mode')) {
+          exitFocus();
+        }
+      });
+
+      // 关闭日志弹层时，也退出专注
+      var closeBtn = document.getElementById('journalClose');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', exitFocus);
+      }
     })();
    </script>
   </body>
