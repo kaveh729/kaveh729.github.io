@@ -1651,7 +1651,7 @@
           <button id="prevBtn" title="上一首">⏮</button>
           <button id="playBtn" class="play-btn" title="播放/暂停">▶</button>
           <button id="nextBtn" title="下一首">⏭</button>
-          <button id="shuffleBtn" title="随机播放：关">🔀</button>
+          <button id="shuffleBtn" class="active" title="随机播放：开">🔀</button>
         </div>
 
         <div class="player-progress">
@@ -2021,7 +2021,7 @@
       ];
 
       var current = 0;
-      var shuffle = false;
+      var shuffle = true;
 
       var playBtn = document.getElementById('playBtn');
       var prevBtn = document.getElementById('prevBtn');
