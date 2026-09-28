@@ -1234,17 +1234,17 @@
           }
         }
 
-        .list-panel {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.35s ease, opacity 0.3s ease;
-          opacity: 0;
-        }
-    
-        .list-panel.open {
-          max-height: 2000px;
-          opacity: 1;
-        }
+            .list-panel {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.45s ease, opacity 0.35s ease;
+    }
+
+    .list-panel.open {
+      max-height: 3000px;
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -1331,25 +1331,25 @@
       </div>
     </section>
 
-    <section id="list" class="card">
+        <section id="list" class="card">
       <h2>人，努力成长呀</h2>
       <p style="color: var(--muted); font-size: 14px; margin-top: 0;">
-        记录我看过的书和电影。
+        记录我看过的书和电影。点击下方按钮展开。
       </p>
 
       <div class="list-tabs">
-        <button class="list-tab active" data-type="book">📚 书</button>
+        <button class="list-tab" data-type="book">📚 书</button>
         <button class="list-tab" data-type="movie">🎬 电影</button>
       </div>
 
       <div id="listPanel" class="list-panel">
-      <div id="listContent"></div>
-
-      <div class="list-actions">
-        <button id="listAdd" class="list-btn primary">+ 添加</button>
-        <button id="listExport" class="list-btn">导出代码</button>
+        <div id="listContent"></div>
+        <div class="list-actions">
+          <button id="listAdd" class="list-btn primary">+ 添加</button>
+          <button id="listExport" class="list-btn">导出代码</button>
+        </div>
       </div>
-    </div>
+    </section>
 
     <section id="message" class="card">
       <details class="message-toggle">
@@ -2358,6 +2358,9 @@
       var STORAGE_KEY = 'my_list_items';
       var currentType = 'book';
 
+      var panelEl = document.getElementById('listPanel');
+      var tabsEl = document.querySelectorAll('.list-tab');
+
       function getLocal() {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
         catch (e) { return []; }
@@ -2432,40 +2435,30 @@
         });
       }
 
-            var panelEl = document.getElementById('listPanel');
-      var lastType = currentType;
-
-      document.querySelectorAll('.list-tab').forEach(function (tab) {
+      // 点击按钮：展开 / 切换 / 收起
+      tabsEl.forEach(function (tab) {
         tab.addEventListener('click', function () {
           var type = tab.dataset.type;
-          var wasOpen = panelEl.classList.contains('open');
+          var isOpen = panelEl.classList.contains('open');
+          var isSame = tab.classList.contains('active');
 
-          // 如果点的是同一个类型，且已经展开 → 收起
-          if (wasOpen && type === lastType) {
+          // 已展开，且点的是同一个 → 收起
+          if (isOpen && isSame) {
             panelEl.classList.remove('open');
-            document.querySelectorAll('.list-tab').forEach(function (t) {
-              t.classList.remove('active');
-            });
+            tab.classList.remove('active');
             return;
           }
 
           // 否则展开并切换
-          document.querySelectorAll('.list-tab').forEach(function (t) {
-            t.classList.remove('active');
-          });
+          tabsEl.forEach(function (t) { t.classList.remove('active'); });
           tab.classList.add('active');
           currentType = type;
-          lastType = type;
-
           render();
-
-          // 用 rAF 保证 render 完成后才展开
-          requestAnimationFrame(function () {
-            panelEl.classList.add('open');
-          });
+          panelEl.classList.add('open');
         });
       });
 
+      // 添加
       document.getElementById('listAdd').addEventListener('click', function () {
         var wrap = document.getElementById('listFormWrap');
         if (wrap) { wrap.remove(); return; }
@@ -2492,7 +2485,7 @@
         form.querySelector('#lfSave').addEventListener('click', function () {
           var type = form.querySelector('#lfType').value;
           var title = form.querySelector('#lfTitle').value.trim();
-          var rating = parseInt(form.querySelector('#lfRating').value, 10);
+          var rating = parseFloat(form.querySelector('#lfRating').value);
           var comment = form.querySelector('#lfComment').value.trim();
 
           if (!title) { alert('标题要填。'); return; }
@@ -2503,7 +2496,7 @@
           setLocal(arr);
 
           currentType = type;
-          document.querySelectorAll('.list-tab').forEach(function (t) {
+          tabsEl.forEach(function (t) {
             t.classList.toggle('active', t.dataset.type === type);
           });
 
@@ -2515,6 +2508,7 @@
         });
       });
 
+      // 导出
       document.getElementById('listExport').addEventListener('click', function () {
         var all = getLocal().concat(defaultItems);
         var text = JSON.stringify(all, null, 2);
@@ -2552,10 +2546,11 @@
         });
       });
 
-      render();
+      // 初始不展开，不渲染
+      panelEl.classList.remove('open');
     })();
   </script>
-
+    
   <script>
     (function () {
       var cards = document.querySelectorAll('.container > .card');
