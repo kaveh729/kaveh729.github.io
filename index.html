@@ -1427,6 +1427,82 @@
       background: var(--accent);
       color: #0b1f16;
     }
+
+      .about-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .about-head h2 {
+      margin: 0;
+    }
+
+    .about-edit-btn {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .about-edit-btn:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    [data-theme="dark"] .about-edit-btn {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .about-edit-btn:hover {
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    .about-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .about-edit-form input,
+    .about-edit-form textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid rgba(15, 138, 95, 0.25);
+      border-radius: 8px;
+      font: inherit;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text);
+      outline: none;
+    }
+
+    .about-edit-form textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    [data-theme="dark"] .about-edit-form {
+      background: rgba(18, 51, 38, 0.6);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    [data-theme="dark"] .about-edit-form input,
+    [data-theme="dark"] .about-edit-form textarea {
+      background: rgba(11, 31, 22, 0.8);
+      color: var(--text);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -1456,8 +1532,11 @@
     </nav>
 
     <section id="about" class="card">
-      <h2>泥嚎</h2>
-      <p>持续探索人类世界中</p>
+      <div class="about-head">
+        <h2 id="aboutTitle">泥嚎</h2>
+        <button id="aboutEditBtn" class="about-edit-btn" style="display:none;">编辑</button>
+      </div>
+      <p id="aboutBody">持续探索人类世界中</p>
     </section>
 
     <section id="music" class="card">
@@ -3059,6 +3138,98 @@
 
       updateClock();
       setInterval(updateClock, 1000);
+    })();
+  </script>
+
+    <script>
+    (function () {
+      var SUPABASE_URL = 'https://wwzfsxhvvgbdkdodtsfb.supabase.co';
+      var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3emZzeGh2dmdiZGtkb2R0c2ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTA2NTIsImV4cCI6MjEwNjA4NjY1Mn0.aA_X2lSNwrGWAkIyjMEcMIyqHCVTUQ4ZtnyTr1CeLxI';
+
+      var titleEl = document.getElementById('aboutTitle');
+      var bodyEl = document.getElementById('aboutBody');
+      var editBtn = document.getElementById('aboutEditBtn');
+      if (!titleEl || !bodyEl || !editBtn) return;
+
+      var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // 读取内容
+      function loadAbout() {
+        sb.from('about_card')
+          .select('*')
+          .eq('id', 1)
+          .maybeSingle()
+          .then(function (res) {
+            if (res.error || !res.data) return;
+            titleEl.textContent = res.data.title || '';
+            bodyEl.textContent = res.data.body || '';
+          });
+      }
+
+      // 检查登录状态，登录了才显示编辑按钮
+      sb.auth.getSession().then(function (res) {
+        var session = res.data && res.data.session;
+        if (session) {
+          editBtn.style.display = 'inline-block';
+        }
+      });
+
+      // 点编辑 → 打开表单
+      editBtn.addEventListener('click', function () {
+        var existing = document.getElementById('aboutEditWrap');
+        if (existing) { existing.remove(); return; }
+
+        var form = document.createElement('div');
+        form.id = 'aboutEditWrap';
+        form.className = 'about-edit-form';
+        form.innerHTML =
+          '<input id="aboutEditTitle" value="' + (titleEl.textContent || '').replace(/"/g, '&quot;') + '" placeholder="标题">' +
+          '<textarea id="aboutEditBody" placeholder="正文...">' + (bodyEl.textContent || '') + '</textarea>' +
+          '<div style="display:flex;gap:8px;">' +
+            '<button id="aboutSaveBtn" class="write-actions-primary" style="background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:999px;cursor:pointer;font-size:14px;">保存</button>' +
+            '<button id="aboutCancelBtn" style="background:transparent;border:1px solid rgba(15,138,95,0.3);color:var(--accent);padding:8px 20px;border-radius:999px;cursor:pointer;font-size:14px;">取消</button>' +
+          '</div>';
+
+        document.getElementById('about').appendChild(form);
+
+        document.getElementById('aboutCancelBtn').addEventListener('click', function () {
+          form.remove();
+        });
+
+        document.getElementById('aboutSaveBtn').addEventListener('click', function () {
+          var newTitle = document.getElementById('aboutEditTitle').value.trim();
+          var newBody = document.getElementById('aboutEditBody').value.trim();
+          if (!newTitle) { alert('标题不能为空。'); return; }
+
+          var saveBtn = document.getElementById('aboutSaveBtn');
+          saveBtn.disabled = true;
+          saveBtn.textContent = '保存中...';
+
+          sb.from('about_card').update({
+            title: newTitle,
+            body: newBody,
+            updated_at: new Date().toISOString()
+          }).eq('id', 1).then(function (res) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '保存';
+
+            if (res.error) {
+              alert('保存失败：' + res.error.message);
+              return;
+            }
+
+            titleEl.textContent = newTitle;
+            bodyEl.textContent = newBody;
+            form.remove();
+          }).catch(function (err) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = '保存';
+            alert('保存失败：' + (err.message || err));
+          });
+        });
+      });
+
+      loadAbout();
     })();
   </script>
  </body>
