@@ -2073,17 +2073,39 @@
               .map(function (l) { return '<p>' + highlight(l) + '</p>'; }).join('');
           }
       
+                    // 把时间格式化成 "2026-09-28 14:32"
+          function formatDateTime(value) {
+            if (!value) return '';
+            var d = new Date(value);
+            if (isNaN(d.getTime())) return String(value);
+            var y = d.getFullYear();
+            var mo = String(d.getMonth() + 1).padStart(2, '0');
+            var day = String(d.getDate()).padStart(2, '0');
+            var hh = String(d.getHours()).padStart(2, '0');
+            var mm = String(d.getMinutes()).padStart(2, '0');
+            return y + '-' + mo + '-' + day + ' ' + hh + ':' + mm;
+          }
+
+          // 统一取日志的时间：优先用 created_at，没有就用 date
+          function entryDate(item) {
+            return item.created_at || item.date || '';
+          }
+
           function monthKey(dateStr) {
             if (!dateStr) return '0000-00';
-            var parts = String(dateStr).split('-');
-            return (parts[0] || '0000') + '-' + (parts[1] || '00');
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) {
+              var parts = String(dateStr).split('-');
+              return (parts[0] || '0000') + '-' + (parts[1] || '00');
+            }
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
           }
-      
+
           function monthLabel(dateStr) {
             if (!dateStr) return '未知日期';
-            var parts = String(dateStr).split('-');
-            if (parts.length < 2) return dateStr;
-            return parts[0] + '年' + parseInt(parts[1], 10) + '月';
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return String(dateStr);
+            return d.getFullYear() + '年' + (d.getMonth() + 1) + '月';
           }
       
           // 压缩图片
@@ -2155,7 +2177,7 @@
            card.innerHTML =
               '<div class="entry-head">' +
                 '<div>' +
-                  '<div class="entry-date">' + esc(item.date) + '</div>' +
+                  '<div class="entry-date">' + esc(formatDateTime(entryDate(item))) + '</div>' +
                   '<h2 class="entry-title">' + highlight(item.title) + '</h2>' +
                 '</div>' +
                   '<div class="entry-actions">' +
@@ -2355,7 +2377,7 @@
             // 按月份分组
             var groups = {};
             filtered.forEach(function (item) {
-              var key = monthKey(item.date);
+              var key = monthKey(entryDate(item));
               if (!groups[key]) groups[key] = [];
               groups[key].push(item);
             });
@@ -2366,16 +2388,16 @@
             // 每个月内部的日志也按时间排
             keys.forEach(function (k) {
               groups[k].sort(function (a, b) {
-                var da = a.date || '';
-                var db = b.date || '';
-                if (sortOrder === 'desc') return db.localeCompare(da);
-                return da.localeCompare(db);
+                var ta = entryDate(a);
+                var tb = entryDate(b);
+                if (sortOrder === 'desc') return tb.localeCompare(ta);
+                return ta.localeCompare(tb);
               });
             });
       
             keys.forEach(function (key) {
               var items = groups[key];
-              var label = monthLabel(items[0].date);
+              var label = monthLabel(entryDate(items[0]));
       
               // 时间轴项
               var tItem = document.createElement('div');
