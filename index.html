@@ -807,6 +807,11 @@
 
     .entry-body p { margin: 0 0 10px; }
 
+   .entry-body p.empty-line {
+      min-height: 0.6em;
+      margin: 0 0 10px;
+    }
+
     .entry-tags {
       margin-top: 14px;
       display: flex;
@@ -2674,8 +2679,12 @@
           }
           
           function textToHtml(text) {
-            return text.split(/\n+/).filter(function (l) { return l.trim(); })
-              .map(function (l) { return '<p>' + highlight(l) + '</p>'; }).join('');
+            if (!text) return '';
+            var lines = text.split('\n');
+            return lines.map(function (line) {
+              if (!line.trim()) return '<p class="empty-line">&nbsp;</p>';
+              return '<p>' + highlight(line) + '</p>';
+            }).join('');
           }
       
                     // 把时间格式化成 "2026-09-28 14:32"
