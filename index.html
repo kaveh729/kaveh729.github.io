@@ -1233,6 +1233,18 @@
             border-bottom-color: var(--accent);
           }
         }
+
+        .list-panel {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.35s ease, opacity 0.3s ease;
+          opacity: 0;
+        }
+    
+        .list-panel.open {
+          max-height: 2000px;
+          opacity: 1;
+        }
   </style>
 </head>
 <body>
@@ -1329,13 +1341,14 @@
         <button class="list-tab" data-type="movie">🎬 电影</button>
       </div>
 
+      <div id="listPanel" class="list-panel">
       <div id="listContent"></div>
 
       <div class="list-actions">
         <button id="listAdd" class="list-btn primary">+ 添加</button>
         <button id="listExport" class="list-btn">导出代码</button>
       </div>
-    </section>
+    </div>
 
     <section id="message" class="card">
       <details class="message-toggle">
@@ -2402,14 +2415,37 @@
         });
       }
 
+            var panelEl = document.getElementById('listPanel');
+      var lastType = currentType;
+
       document.querySelectorAll('.list-tab').forEach(function (tab) {
         tab.addEventListener('click', function () {
+          var type = tab.dataset.type;
+          var wasOpen = panelEl.classList.contains('open');
+
+          // 如果点的是同一个类型，且已经展开 → 收起
+          if (wasOpen && type === lastType) {
+            panelEl.classList.remove('open');
+            document.querySelectorAll('.list-tab').forEach(function (t) {
+              t.classList.remove('active');
+            });
+            return;
+          }
+
+          // 否则展开并切换
           document.querySelectorAll('.list-tab').forEach(function (t) {
             t.classList.remove('active');
           });
           tab.classList.add('active');
-          currentType = tab.dataset.type;
+          currentType = type;
+          lastType = type;
+
           render();
+
+          // 用 rAF 保证 render 完成后才展开
+          requestAnimationFrame(function () {
+            panelEl.classList.add('open');
+          });
         });
       });
 
