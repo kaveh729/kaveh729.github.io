@@ -2450,6 +2450,106 @@
       background: var(--gold);
       color: #0b1f16;
     }
+
+    /* ========== 分享浮层 ========== */
+.share-sheet {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+}
+
+.share-sheet.open {
+  display: block;
+}
+
+.share-sheet-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  animation: shareFadeIn 0.2s ease;
+}
+
+.share-sheet-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+  animation: shareSlideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.share-sheet-title {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+}
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-opt {
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 138, 95, 0.25);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: var(--font-main);
+}
+
+.share-opt:hover {
+  background: rgba(15, 138, 95, 0.1);
+}
+
+.share-cancel {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  cursor: pointer;
+  font-family: var(--font-main);
+}
+
+.share-cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .share-opt {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+[data-theme="dark"] .share-opt:hover {
+  background: rgba(52, 211, 153, 0.2);
+}
+
+@keyframes shareFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shareSlideUp {
+  from { transform: translate(-50%, 100%); }
+  to   { transform: translate(-50%, 0); }
+}
   </style>
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
@@ -2672,12 +2772,13 @@
 
     <div class="reader-overlay" id="readerOverlay">
     <div class="reader-bar">
-      <button id="readerBack" class="reader-back">← 返回</button>
-      <div class="reader-font-controls">
-        <button id="readerFontMinus" class="reader-font-btn" title="缩小字体">A−</button>
-        <button id="readerFontPlus" class="reader-font-btn" title="放大字体">A+</button>
-      </div>
-    </div>
+  <button id="readerBack" class="reader-back">← 返回</button>
+  <div class="reader-font-controls">
+    <button id="readerShare" class="reader-font-btn" title="分享这篇文章">↗</button>
+    <button id="readerFontMinus" class="reader-font-btn" title="缩小字体">A−</button>
+    <button id="readerFontPlus" class="reader-font-btn" title="放大字体">A+</button>
+  </div>
+</div>
     <div class="reader-content" id="readerContent"></div>
   </div>
   
@@ -5286,6 +5387,8 @@
       var fontMinus = document.getElementById('readerFontMinus');
       var fontPlus = document.getElementById('readerFontPlus');
 
+      var currentReaderItem = null;
+
       if (!overlay || !content) return;
 
       var readerScale = parseFloat(localStorage.getItem('reader_scale')) || 1;
@@ -5362,6 +5465,7 @@
       }
 
       function openReader(item) {
+        currentReaderItem = item;
         var tagsHtml = '';
         if (item.tags && item.tags.length) {
           tagsHtml = '<div class="reader-tags">' +
@@ -5490,6 +5594,11 @@
         readerScale = Math.min(2, readerScale + 0.1);
         applyScale();
       });
+
+            // 暴露当前正在阅读的文章，给分享功能用
+      window.__readerGetCurrent = function () {
+        return currentReaderItem;
+      };
     })();
   </script>
 
@@ -5504,5 +5613,149 @@
       }, 1800);
     })();
   </script>
+
+  <div class="share-sheet" id="shareSheet">
+  <div class="share-sheet-mask"></div>
+  <div class="share-sheet-panel">
+    <p class="share-sheet-title">分享这篇文章</p>
+    <div class="share-options">
+      <button data-share="native" class="share-opt">📱 系统分享</button>
+      <button data-share="link" class="share-opt">🔗 复制链接</button>
+      <button data-share="text" class="share-opt">📄 复制全文</button>
+    </div>
+    <button class="share-cancel" id="shareCancel">取消</button>
+  </div>
+</div>
+
+  <script>
+(function () {
+  var shareBtn = document.getElementById('readerShare');
+  var sheet = document.getElementById('shareSheet');
+  var cancelBtn = document.getElementById('shareCancel');
+  if (!shareBtn || !sheet) return;
+
+  var mask = sheet.querySelector('.share-sheet-mask');
+  var nativeBtn = sheet.querySelector('[data-share="native"]');
+
+  // 不支持系统分享就隐藏那个选项
+  if (!navigator.share && nativeBtn) {
+    nativeBtn.style.display = 'none';
+  }
+
+  function currentPost() {
+    return window.__readerGetCurrent ? window.__readerGetCurrent() : null;
+  }
+
+  function openSheet() {
+    sheet.classList.add('open');
+  }
+
+  function closeSheet() {
+    sheet.classList.remove('open');
+  }
+
+  // 复制文本（兼容非 HTTPS 环境）
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+      document.body.removeChild(ta);
+    });
+  }
+
+  // 生成链接（带 ?post=id，配合深链接使用）
+  function buildLink(item) {
+    return location.origin + location.pathname + '?post=' + encodeURIComponent(item.id);
+  }
+
+  // 生成纯文本
+  function buildText(item) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = item.body || '';
+    var plain = tmp.textContent || tmp.innerText || '';
+    plain = plain.replace(/\n{3,}/g, '\n\n').trim();
+    return item.title + '\n\n' + plain + '\n\n—— 来自 ' + location.host;
+  }
+
+  // 轻提示
+  function toast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText =
+      'position:fixed;left:50%;bottom:120px;transform:translateX(-50%);' +
+      'background:rgba(0,0,0,0.8);color:#fff;padding:10px 20px;border-radius:999px;' +
+      'font-size:14px;z-index:30000;pointer-events:none;opacity:0;transition:opacity 0.25s;';
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.style.opacity = '1'; });
+    setTimeout(function () {
+      t.style.opacity = '0';
+      setTimeout(function () { t.remove(); }, 300);
+    }, 1800);
+  }
+
+  // 打开分享浮层
+  shareBtn.addEventListener('click', function () {
+    if (!currentPost()) return;
+    openSheet();
+  });
+
+  cancelBtn.addEventListener('click', closeSheet);
+  mask.addEventListener('click', closeSheet);
+
+  // 三个选项
+  sheet.querySelectorAll('.share-opt').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var item = currentPost();
+      if (!item) return;
+      var type = btn.dataset.share;
+
+      if (type === 'native') {
+        navigator.share({
+          title: item.title,
+          text: buildText(item).slice(0, 200),
+          url: buildLink(item)
+        }).then(function () {
+          closeSheet();
+        }).catch(function () {
+          // 用户取消，什么都不做
+        });
+        return;
+      }
+
+      if (type === 'link') {
+        copyText(buildLink(item)).then(function () {
+          toast('链接已复制');
+          closeSheet();
+        }).catch(function () {
+          toast('复制失败，请长按手动复制');
+        });
+        return;
+      }
+
+      if (type === 'text') {
+        copyText(buildText(item)).then(function () {
+          toast('全文已复制');
+          closeSheet();
+        }).catch(function () {
+          toast('复制失败，请长按手动复制');
+        });
+      }
+    });
+  });
+})();
+</script>
   </body>
 </html>
