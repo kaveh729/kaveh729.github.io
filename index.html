@@ -981,6 +981,35 @@
       background: rgba(200, 60, 60, 0.1);
     }
 
+        .list-item-edit {
+      background: transparent;
+      border: 1px solid rgba(15, 138, 95, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    .list-item-edit:hover {
+      background: rgba(15, 138, 95, 0.1);
+    }
+
+    .list-item-actions {
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    [data-theme="dark"] .list-item-edit {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    [data-theme="dark"] .list-item-edit:hover {
+      background: rgba(52, 211, 153, 0.1);
+    }
+
     .list-actions {
       display: flex;
       gap: 10px;
@@ -4327,7 +4356,12 @@
                 '<div class="list-item-rating">' + stars(item.rating) + '</div>' +
                 '<div class="list-item-comment">' + esc(item.comment) + '</div>' +
               '</div>' +
-              '<button class="list-item-del" data-id="' + item.id + '">删除</button>' +
+              '<div class="list-item-actions">' +
+                '<button class="list-item-edit" data-id="' + item.id + '">编辑</button>' +
+                '<button class="list-item-del" data-id="' + item.id + '">删除</button>' +
+              '</div>' +
+            '</div>';
+          container.appendChild(row);
             '</div>';
           container.appendChild(row);
         });
@@ -4343,6 +4377,66 @@
           });
         });
       }
+
+              // 编辑按钮
+        container.querySelectorAll('.list-item-edit').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = btn.dataset.id;
+            var item = null;
+            for (var i = 0; i < allItems.length; i++) {
+              if (String(allItems[i].id) === String(id)) { item = allItems[i]; break; }
+            }
+            if (!item) return;
+
+            var wrap = document.getElementById('listFormWrap');
+            if (wrap) wrap.remove();
+
+            var form = document.createElement('div');
+            form.id = 'listFormWrap';
+            form.className = 'list-edit-form';
+            form.innerHTML =
+              '<p style="margin:0 0 4px;font-weight:600;">编辑</p>' +
+              '<select id="lfType">' +
+                '<option value="book"' + (item.type === 'book' ? ' selected' : '') + '>书</option>' +
+                '<option value="movie"' + (item.type === 'movie' ? ' selected' : '') + '>电影</option>' +
+              '</select>' +
+              '<input id="lfTitle" value="' + (item.title || '').replace(/"/g, '&quot;') + '" placeholder="书名或片名">' +
+              '<input id="lfRating" type="number" min="1" max="5" step="0.5" value="' + (item.rating || 5) + '" placeholder="星级 1-5">' +
+              '<textarea id="lfComment" placeholder="短评（可选）">' + (item.comment || '') + '</textarea>' +
+              '<div class="row">' +
+                '<button id="lfSave" class="list-btn primary">保存</button>' +
+                '<button id="lfCancel" class="list-btn">取消</button>' +
+              '</div>';
+
+            container.insertBefore(form, container.firstChild);
+            form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            form.querySelector('#lfCancel').addEventListener('click', function () {
+              form.remove();
+            });
+
+            form.querySelector('#lfSave').addEventListener('click', function () {
+              var type = form.querySelector('#lfType').value;
+              var title = form.querySelector('#lfTitle').value.trim();
+              var rating = parseFloat(form.querySelector('#lfRating').value);
+              var comment = form.querySelector('#lfComment').value.trim();
+
+              if (!title) { alert('标题要填。'); return; }
+              if (isNaN(rating) || rating < 1 || rating > 5) { alert('星级填 1-5。'); return; }
+
+              sb.from('list_items').update({
+                type: type,
+                title: title,
+                rating: rating,
+                comment: comment
+              }).eq('id', id).then(function (res) {
+                if (res.error) { alert('保存失败：' + res.error.message); return; }
+                form.remove();
+                loadItems().then(render);
+              });
+            });
+          });
+        });
 
       tabsEl.forEach(function (tab) {
         tab.addEventListener('click', function () {
