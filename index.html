@@ -3685,6 +3685,7 @@
               '<div class="write-actions">' +
                 '<button id="editSave" class="primary">保存</button>' +
                 '<button id="editCancel">取消</button>' +
+                '<button class="focus-toggle-btn" type="button">🎯 专注模式</button>' +
               '</div>';
 
             var layoutEl = document.querySelector('.journal-layout');
@@ -5089,19 +5090,27 @@
    </script>
 
     <script>
+       <script>
     (function () {
       var overlay = document.getElementById('journalOverlay');
       if (!overlay) return;
 
-      var focusBtn = document.getElementById('focusToggleBtn');
       var exitBtn = null;
+      var activeFocusBtn = null;
 
-      function enterFocus() {
+      function findEditorInForm(form) {
+        if (!form) return null;
+        return form.querySelector('.rich-editor') || form.querySelector('textarea');
+      }
+
+      function enterFocus(form, btn) {
         if (overlay.classList.contains('focus-mode')) return;
         overlay.classList.add('focus-mode');
 
-        if (focusBtn) {
-          focusBtn.textContent = '退出专注';
+        activeFocusBtn = btn;
+
+        if (btn) {
+          btn.textContent = '退出专注';
         }
 
         // 创建退出按钮
@@ -5119,17 +5128,8 @@
           document.documentElement.requestFullscreen().catch(function () {});
         }
 
-               // 焦点放在正文框（支持富文本编辑器）
-        var editor = overlay.querySelector('.write-form .rich-editor');
-        if (!editor) {
-          editor = overlay.querySelector('#editFormWrap .rich-editor');
-        }
-        if (!editor) {
-          editor = overlay.querySelector('.write-form textarea');
-        }
-        if (!editor) {
-          editor = overlay.querySelector('#editFormWrap textarea');
-        }
+        // 焦点放在对应的编辑器
+        var editor = findEditorInForm(form);
         if (editor) {
           setTimeout(function () {
             editor.focus();
@@ -5141,8 +5141,9 @@
         if (!overlay.classList.contains('focus-mode')) return;
         overlay.classList.remove('focus-mode');
 
-        if (focusBtn) {
-          focusBtn.textContent = '🎯 专注模式';
+        if (activeFocusBtn) {
+          activeFocusBtn.textContent = '🎯 专注模式';
+          activeFocusBtn = null;
         }
 
         if (exitBtn) {
@@ -5155,15 +5156,21 @@
         }
       }
 
-      if (focusBtn) {
-        focusBtn.addEventListener('click', function () {
-          if (overlay.classList.contains('focus-mode')) {
-            exitFocus();
-          } else {
-            enterFocus();
-          }
-        });
-      }
+      // 事件委托：所有专注模式按钮都能触发
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('.focus-toggle-btn');
+        if (!btn) return;
+        e.preventDefault();
+
+        if (overlay.classList.contains('focus-mode')) {
+          exitFocus();
+          return;
+        }
+
+        // 找到按钮所在的表单
+        var form = btn.closest('.write-form') || btn.closest('#editFormWrap');
+        enterFocus(form, btn);
+      });
 
       // 按 Esc 退出专注
       document.addEventListener('keydown', function (e) {
@@ -5178,7 +5185,7 @@
         closeBtn.addEventListener('click', exitFocus);
       }
     })();
-   </script>
+    </script>
 
     <script>
     (function () {
