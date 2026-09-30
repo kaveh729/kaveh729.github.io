@@ -3442,6 +3442,12 @@
               <button type="button" data-cmd="foreColor" data-value="#1e88e5" title="蓝字" style="color:#1e88e5;font-weight:700">A</button>
               <button type="button" data-cmd="foreColor" data-value="#43a047" title="绿字" style="color:#43a047;font-weight:700">A</button>
               <span class="tb-sep"></span>
+              <span class="tb-sep"></span>
+              <button type="button" data-cmd="fontSize" data-value="0.8" title="小字" style="font-size:12px">A⁻</button>
+              <button type="button" data-cmd="fontSize" data-value="1" title="正常字号" style="font-size:14px">A</button>
+              <button type="button" data-cmd="fontSize" data-value="1.3" title="大字" style="font-size:16px">A⁺</button>
+              <button type="button" data-cmd="fontSize" data-value="1.6" title="特大字" style="font-size:19px">A⁺⁺</button>
+              <span class="tb-sep"></span>
               <button type="button" data-cmd="removeFormat" title="清除格式">✕</button>
             </div>
             <div id="entryBody" class="rich-editor" contenteditable="true" data-placeholder="正文..."></div>
@@ -3804,6 +3810,12 @@
                 '<button type="button" data-cmd="foreColor" data-value="#e53935" title="红字" style="color:#e53935;font-weight:700">A</button>' +
                 '<button type="button" data-cmd="foreColor" data-value="#1e88e5" title="蓝字" style="color:#1e88e5;font-weight:700">A</button>' +
                 '<button type="button" data-cmd="foreColor" data-value="#43a047" title="绿字" style="color:#43a047;font-weight:700">A</button>' +
+                '<span class="tb-sep"></span>' +
+                '<span class="tb-sep"></span>' +
+                '<button type="button" data-cmd="fontSize" data-value="0.8" title="小字" style="font-size:12px">A⁻</button>' +
+                '<button type="button" data-cmd="fontSize" data-value="1" title="正常字号" style="font-size:14px">A</button>' +
+                '<button type="button" data-cmd="fontSize" data-value="1.3" title="大字" style="font-size:16px">A⁺</button>' +
+                '<button type="button" data-cmd="fontSize" data-value="1.6" title="特大字" style="font-size:19px">A⁺⁺</button>' +
                 '<span class="tb-sep"></span>' +
                 '<button type="button" data-cmd="removeFormat" title="清除格式">✕</button>' +
               '</div>' +
@@ -4301,7 +4313,21 @@
             });
           }
       
-                    // 工具栏初始化
+                             // 把选中文字包成 <span style="font-size: xx em">
+          function applyFontSize(editor, em) {
+            // 先用 execCommand 打一个临时标记
+            document.execCommand('fontSize', false, '7');
+
+            // 再把所有 <font size="7"> 换成 span
+            editor.querySelectorAll('font[size="7"]').forEach(function (f) {
+              var span = document.createElement('span');
+              span.style.fontSize = em + 'em';
+              // 把 font 的所有子节点搬进 span
+              while (f.firstChild) span.appendChild(f.firstChild);
+              f.parentNode.replaceChild(span, f);
+            });
+          }
+
           function initToolbar(toolbar, editor) {
             if (!toolbar || !editor) return;
             toolbar.querySelectorAll('button[data-cmd]').forEach(function (btn) {
@@ -4315,7 +4341,11 @@
                 var val = btn.dataset.value || null;
                 editor.focus();
                 try {
-                  document.execCommand(cmd, false, val);
+                  if (cmd === 'fontSize') {
+                    applyFontSize(editor, val);
+                  } else {
+                    document.execCommand(cmd, false, val);
+                  }
                 } catch (err) {}
               });
             });
